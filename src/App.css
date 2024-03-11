@@ -1,0 +1,73 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: cursive;
+
+}
+body {
+        background: rgba(233, 232, 232, 0.904);
+}
+a {
+    text-decoration: none;
+    color: black;
+}
+li {
+    list-style: none;
+}
+textarea {
+    resize: none;
+}
+.d_flex {
+    display: flex;
+    justify-content: space-between;
+}
+.fd_flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.sticky + .home-page {
+    padding: 95px  20px;
+}
+.sticky + .create-post {
+    padding-top: 95px;
+
+}
+ .sticky + .activty-container {
+    padding: 70px  0;
+}
+ .sticky + .others-profile-container {
+    padding: 70px  0;
+}
+ .sticky + .edit-profile-container {
+    padding: 70px  0;
+}
+.error-message {
+    font-size: 14px;
+    color: rgba(255, 0, 0, 0.753);
+}
+.success-message {
+    font-size: 14px;
+    color: rgba(2, 102, 32);
+}
+.input-field .input-error {
+    border: red;
+}
+
+.form-message .success {
+    padding:10px ;
+    background: rgba(2, 102, 32, 0.493);
+    color: white;
+}
+
+.form-message .error {
+    padding: 10px;
+    background: rgba(231, 77, 77, 0.736);
+    color: white;
+}
+@media screen and (max-width : 800px) {
+    * {
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 18px;
+    }
+}

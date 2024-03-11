@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+:root {
+  --light-green-blue: rgba(64, 202, 179, 0.493);
+  --light-purple-blue: rgba(35, 11, 143, 0.418);
+  --light-purple-blue2: rgba(35, 11, 143, 0.258); 
+  --light-green: rgba(2, 167, 71, 0.267); 
+  --light-red: rgba(180, 6, 6, 0.199); 
+
+  --text-color1:rgba(0, 0, 0, 0.753);
+
+  --box-shadow: rgba(0, 0, 0, 0.248) 0 3px 20px;
+  --box-shadow2: rgba(0, 0, 0, 0.248) 0 3px 5px;
+
+  --link:rgba(8, 8, 105, 0.9);
+}
+@keyframes fadeIn  {
+  0% {
+      opacity: 0;
+      transform: Scale(1.1);
+  }
+  100% {
+      opacity: 1;
+      transform: Scale(1);
+  }
+}
+@keyframes fadeDown  {
+  0% {
+      opacity: 0;
+      transform: Scale(0.5);
+      transform: translate(0, -100%);
+
+  }
+  100% {
+      opacity: 1;
+      transform: Scale(1);
+      transform: translate(0, 0);
+  }
+}
+@keyframes fadeToLeft {
+  0% {
+      opacity: 0;
+      right: -500px;
+  }
+  100% {
+      opacity: 1;
+      right: 0;
+  } 
+}
