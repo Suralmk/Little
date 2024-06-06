@@ -10,15 +10,6 @@ import api from '../Config/config'
 import { useState, useEffect, useReducer } from 'react'
 
 const Home = ({ ignored, forceUpdate, isAuthenticated }) => {
-  // window.addEventListener('scroll', function () {
-  //   const profile = document.querySelector('#home-profile')
-  //   profile.classList.toggle('stick-home-profile', this.window.scrollY > 1)
-  // })
-  // window.addEventListener('scroll', function () {
-  //   const profile = document.querySelector('#home-additional')
-  //   profile.classList.toggle('stick-home-additional', this.window.scrollY > 700)
-  // })
-
   const [posts, setPosts] = useState([])
   const [userData, SetUserData] = useState(localStorage.getItem('username'))
   const [profile, setProfile] = useState([])

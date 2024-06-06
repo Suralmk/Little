@@ -4,8 +4,6 @@ axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
 
-const api = axios.create({
-  baseURL: 'http://127.0.0.1:8500/api/'
+export const api = axios.create({
+  baseURL: 'https://dashboardsurafel.pythonanywhere.com/api/'
 })
-
-export default api

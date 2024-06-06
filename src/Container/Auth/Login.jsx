@@ -4,7 +4,7 @@ import '../style.css'
 import { Link } from 'react-router-dom'
 import { useState, useReducer } from 'react'
 import { useNavigate, useLocation, Navigate } from 'react-router-dom'
-import { side_bg2 } from '../../assets'
+import { side_bg, side_bg2 } from '../../assets'
 import { FaGoogle } from 'react-icons/fa'
 import api from '../../Config/config'
 
@@ -58,11 +58,8 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
     }
   }
   return (
-    <div className='auth-form  d_flex'>
+    <div className='auth-form d_flex'>
       <div className='auth-form-container'>
-        <div className='side_bg'>
-          <img src={side_bg2} alt='' />
-        </div>
         <form action='/' onSubmit={e => submitLogin(e)} className=''>
           <h1>Log In</h1>
           <div className='input-field '>
@@ -103,6 +100,9 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
             </Link>
           </p>
           <button type='submit'>Log In</button>
+          <div class='or-container'>
+            <span class='or-text'>or</span>
+          </div>
           <button type='submit' style={{ marginTop: '0px' }}>
             <FaGoogle /> Log In with Google
           </button>
@@ -112,6 +112,15 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
             <Link to='/register' style={{ color: 'rgb(5, 5, 143)' }}>
               Register
             </Link>
+          </p>
+          <p style={{ fontSize: 12 }}>
+            Email:{' '}
+            <span style={{ color: 'rgba(14, 14, 83, 0.589)' }}>
+              su@gmail.com
+            </span>{' '}
+            <br />
+            Password:{' '}
+            <span style={{ color: 'rgba(14, 14, 83, 0.589)' }}>123</span>
           </p>
         </form>
       </div>

@@ -3,7 +3,7 @@ import '../style.css'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { side_bg } from '../../assets/index'
+import { side_bg, side_bg2 } from '../../assets/index'
 import { useNavigate } from 'react-router-dom'
 import { FaGoogle } from 'react-icons/fa'
 
@@ -69,7 +69,7 @@ const Signup = ({}) => {
     <div className='auth-form  d_flex'>
       <div className='auth-form-container'>
         <div className='side_bg'>
-          <img src={side_bg} alt='' />
+          <img src={side_bg2} alt='' />
         </div>
         <form onSubmit={e => SubmitSignup(e)}>
           <h1>Sign Up</h1>
@@ -124,6 +124,9 @@ const Signup = ({}) => {
             )}
           </div>
           <button type='submit'>Sign Up</button>
+          <div class='or-container'>
+            <span class='or-text'>or</span>
+          </div>
           <button type='submit' style={{ marginTop: '0px' }}>
             <FaGoogle /> Sign Up with Google
           </button>

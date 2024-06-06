@@ -52,9 +52,6 @@ const ResetPassword = ({ setIsAuthenticated, HomeUpdate }) => {
   return (
     <div className='auth-form  d_flex'>
       <div className='auth-form-container'>
-        <div className='side_bg'>
-          <img src={side_bg2} alt='' />
-        </div>
         <form action='/' onSubmit={e => submitLogin(e)} className=''>
           <h1>Reset Password </h1>
           <div className='input-field '>
