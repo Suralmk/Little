@@ -1,6 +1,6 @@
 import './App.css'
 import React from 'react'
-import NavBar from './Components/NavBar'
+
 import Home from './Container/Home'
 import CreatePost from './Container/CreatePost'
 import Message from './Container/Message'
@@ -21,11 +21,6 @@ import CreateNewPassword from './Container/Auth/CreateNewPasssword'
 import ResetEmailSend from './Container/Auth/ResetEmailSend'
 
 function App () {
-  window.addEventListener('scroll', function () {
-    const navbar = document.getElementById('nav')
-    navbar.classList.toggle('sticky', this.window.scrollY > 1)
-  })
-
   return (
     <Router>
       <Routes>
@@ -96,8 +91,8 @@ function App () {
             }
           />
         </Route>
-        <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route
           path='/reset-password/:uidb64/:token'

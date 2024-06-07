@@ -1,10 +1,12 @@
 import { create } from 'zustand'
-import { api } from './config'
-import utils from './utils'
 import { jwtDecode } from 'jwt-decode'
-import { jsondata } from '../Constants/jsondata'
 
 const useGlobal = create(set => ({
+  authed: () => {
+    set(state => ({
+      authenticated: false
+    }))
+  },
   //Toast
   toasts: [],
   addToast: (message, type = 'info') => {
@@ -22,7 +24,7 @@ const useGlobal = create(set => ({
   user: localStorage.getItem('tokens')
     ? jwtDecode(localStorage.getItem('tokens'))
     : null,
-
+  tokens: localStorage.getItem('tokens'),
   init: async () => {
     const tokens = localStorage.getItem('tokens')
     if (tokens) {

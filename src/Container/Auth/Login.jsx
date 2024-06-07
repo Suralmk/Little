@@ -7,8 +7,9 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { side_bg, side_bg2 } from '../../assets'
 import { FaGoogle } from 'react-icons/fa'
 import api from '../../Config/config'
-
+import useGlobal from '../../Core/global'
 const Login = ({ setIsAuthenticated, HomeUpdate }) => {
+  const authed = useGlobal(state => state.authed)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -60,7 +61,7 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
   return (
     <div className='auth-form d_flex'>
       <div className='auth-form-container'>
-        <form action='/' onSubmit={e => submitLogin(e)} className=''>
+        <form action='/' className=''>
           <h1>Log In</h1>
           <div className='input-field '>
             <label htmlFor='email'>EMAIL</label>
@@ -103,7 +104,13 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
           <div class='or-container'>
             <span class='or-text'>or</span>
           </div>
-          <button type='submit' style={{ marginTop: '0px' }}>
+          <button
+            type='submit'
+            style={{ marginTop: '0px' }}
+            onClick={() => {
+              authed()
+            }}
+          >
             <FaGoogle /> Log In with Google
           </button>
 

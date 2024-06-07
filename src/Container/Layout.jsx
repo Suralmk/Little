@@ -4,7 +4,7 @@ import NavBar from '../Components/NavBar'
 
 const Layout = () => {
   return (
-    <div className='flex flex-col'>
+    <div className=''>
       <div>
         <NavBar />
       </div>

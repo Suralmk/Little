@@ -24,6 +24,8 @@ code {
   --box-shadow2: rgba(0, 0, 0, 0.248) 0 3px 5px;
 
   --link:rgba(8, 8, 105, 0.9);
+
+  --bg-gradient: linear-gradient(50deg, rgba(194,241,182,0.2) 24%, rgba(64,202,179,0.2) 51%, rgba(35,11,143,0.2) 90%);
 }
 @keyframes fadeIn  {
   0% {

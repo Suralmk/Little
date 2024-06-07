@@ -30,30 +30,24 @@ const NavBar = ({ setIsAuthenticated, isAuthenticated, user }) => {
     }
   }
 
-  window.addEventListener('scroll', function () {
-    const navbar = document.getElementById('nav')
-    navbar.classList.toggle('sticky', this.window.scrollY > 1)
-  })
-
   const [searchedText, setSearchedText] = useState('')
   const [searchedResult, setSearchedResult] = useState()
 
-  const [searchError, setSearchError] = useState({})
   const performSerach = async e => {
     e.preventDefault()
 
-    try {
-      const response = await api.get(`/users/?search=${searchedText}`)
-      setSearchedResult(response.data)
-      setMobileMenu(false)
-      searchedVal.current.value = ''
-      console.log(searchedResult)
-      //navigate(`/search`, { state: searchedResult })
-    } catch (err) {
-      console.log(err.response.data.error)
+    // try {
+    //   const response = await api.get(`/users/?search=${searchedText}`)
+    //   setSearchedResult(response.data)
+    //   setMobileMenu(false)
+    //   searchedVal.current.value = ''
+    //   console.log(searchedResult)
+    //   //navigate(`/search`, { state: searchedResult })
+    // } catch (err) {
+    //   console.log(err.response.data.error)
 
-      setSearchError({ error: `No results for ${searchedText}` })
-    }
+    //   setSearchError({ error: `No results for ${searchedText}` })
+    // }
   }
 
   return (
