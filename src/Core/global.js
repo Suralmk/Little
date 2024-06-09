@@ -1,10 +1,17 @@
 import { create } from 'zustand'
 import { jwtDecode } from 'jwt-decode'
+import { api } from './config'
 
 const useGlobal = create(set => ({
   authed: () => {
     set(state => ({
       authenticated: false
+    }))
+  },
+  loading: false,
+  setLoading: val => {
+    set(state => ({
+      loading: val
     }))
   },
   //Toast
@@ -24,18 +31,32 @@ const useGlobal = create(set => ({
   user: localStorage.getItem('tokens')
     ? jwtDecode(localStorage.getItem('tokens'))
     : null,
-  tokens: localStorage.getItem('tokens'),
+  tokens: localStorage.getItem('tokens')
+    ? localStorage.getItem('tokens')
+    : null,
   init: async () => {
     const tokens = localStorage.getItem('tokens')
     if (tokens) {
-      set(state => ({
-        authenticated: true,
-        user: jwtDecode(tokens)
-      }))
+      try {
+        const res = await api.post('/token/refresh/', {
+          refresh: JSON.parse(tokens).refresh
+        })
+        console.log(res)
+        let data = {
+          access: res.data.access,
+          refresh: JSON.parse(tokens).refresh
+        }
+        localStorage.setItem('tokens', JSON.stringify(data))
+
+        set(state => ({
+          authenticated: true,
+          user: jwtDecode(res.data.access)
+        }))
+      } catch (err) {
+        console.log(err.message)
+      }
     }
   },
-
-  // Authentication
 
   login: data => {
     localStorage.setItem('tokens', JSON.stringify(data))

@@ -8,26 +8,23 @@ import {
   FaCaretDown,
   FaCaretUp,
   FaHome,
-  FaCommentAlt,
-  FaPlus
+  FaPlus,
+  FaComment
 } from 'react-icons/fa'
+import { CiChat1 } from 'react-icons/ci'
+
 import SearchResult from '../Container/SearchResult'
-const NavBar = ({ setIsAuthenticated, isAuthenticated, user }) => {
+import useGlobal from '../Core/global'
+const NavBar = ({ isAuthenticated }) => {
   const navigate = useNavigate()
   const searchedVal = useRef()
   const [profilearrow, setProFileArrow] = useState(false)
   const [mobileMenu, setMobileMenu] = useState(false)
   const [me, setMe] = useState(false)
-
-  //Log out function
-  const SubmitLogout = async () => {
-    try {
-      await api.post('logout/').then(() => {})
-      setIsAuthenticated(false)
-      localStorage.clear()
-    } catch (err) {
-      console.log(err.message)
-    }
+  const logout = useGlobal(state => state.logout)
+  const handleLogout = () => {
+    logout()
+    setMe(!me)
   }
 
   const [searchedText, setSearchedText] = useState('')
@@ -97,6 +94,20 @@ const NavBar = ({ setIsAuthenticated, isAuthenticated, user }) => {
             <h4>Post</h4>
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to='/sd'
+            className='fd_flex'
+            style={({ isActive }) => {
+              return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
+            }}
+          >
+            <h4>
+              <CiChat1  />
+            </h4>
+            <h4>Message</h4>
+          </NavLink>
+        </li>
 
         <li className='me'>
           <NavLink
@@ -105,6 +116,9 @@ const NavBar = ({ setIsAuthenticated, isAuthenticated, user }) => {
               setMe(!me)
             }}
           >
+            <h4>
+              <FaHome />
+            </h4>
             Me
             {profilearrow ? (
               <React.Fragment>
@@ -115,26 +129,12 @@ const NavBar = ({ setIsAuthenticated, isAuthenticated, user }) => {
             )}
           </NavLink>
           <ul className={me ? `show-me-menu me-menu` : 'me-menu'}>
-            {isAuthenticated ? (
-              <li>
-                <NavLink to='/' onClick={SubmitLogout}>
-                  Logout
-                </NavLink>
-              </li>
-            ) : (
-              <React.Fragment>
-                <li>
-                  <Link to='/login' onClick={() => setMe(!me)}>
-                    Login
-                  </Link>
-                </li>
-                <li>
-                  <Link to='/register' onClick={() => setMe(!me)}>
-                    Sign Up
-                  </Link>
-                </li>
-              </React.Fragment>
-            )}
+            <li>
+              <Link onClick={() => setMe(!me)}>Profile</Link>
+            </li>
+            <li>
+              <Link onClick={() => handleLogout()}>Log Out</Link>
+            </li>
           </ul>
         </li>
 
@@ -202,9 +202,7 @@ const NavBar = ({ setIsAuthenticated, isAuthenticated, user }) => {
 
             {isAuthenticated ? (
               <li>
-                <NavLink to='/' onClick={SubmitLogout}>
-                  Logout
-                </NavLink>
+                <NavLink to='/'>Logout</NavLink>
               </li>
             ) : (
               <React.Fragment>

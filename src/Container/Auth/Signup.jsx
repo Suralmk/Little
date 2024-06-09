@@ -2,63 +2,80 @@ import React from 'react'
 import '../style.css'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
-import { side_bg, side_bg2 } from '../../assets/index'
+import { GoogleLogin } from 'react-google-login'
+import { side_bg2 } from '../../assets/index'
 import { useNavigate } from 'react-router-dom'
-import { FaGoogle } from 'react-icons/fa'
-
-import api from '../../Config/config'
+import useGlobal from '../../Core/global'
+import { api } from '../../Core/config'
 
 const Signup = ({}) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
+  const login = useGlobal(state => state.login)
+  const addToast = useGlobal(state => state.addToast)
+  const setLoading = useGlobal(state => state.setLoading)
   const navigate = useNavigate()
+
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    username: '',
+    password: ''
+  })
+
+  const handleChange = e => {
+    setUserInfo({
+      ...userInfo,
+      [e.target.name]: e.target.value
+    })
+  }
 
   const [passwordError, setPasswordError] = useState('')
   const [emailError, setEmaiError] = useState('')
   const [usernameError, setUsernameError] = useState('')
 
-  const SubmitSignup = async e => {
+  const handleRegister = async e => {
     e.preventDefault()
     if (validateSignup() === false) {
       return
     } else {
+      setLoading(true)
       try {
-        const response = await api()
-          .post('register/', {
-            email: email,
-            username: username,
-            password: password
-          })
-          .then(() => {
-            navigate('/login')
-          })
+        const res = await api.post('register/', userInfo)
+        if (res.status === 201) {
+          addToast('Succesfully Registered!', 'success')
+          login(res.data)
+          navigate('/')
+          console.log(res)
+        }
       } catch (err) {
-        console.log(err.respo)
+        if (err.response) {
+          addToast(`${err.response.data.error}`, 'failure')
+        } else {
+          addToast(`${err.message}!`, 'failure')
+        }
       }
+      setLoading(false)
     }
   }
-  const validateSignup = () => {
-    const failPassword = !password || password.length < 3
-    if (failPassword) {
-      setPasswordError('Password is required!')
-    } else {
-      setPasswordError('')
-    }
 
-    const failemail = !email || email.length === 0
+  const validateSignup = () => {
+    const failemail = !userInfo.email || userInfo.email.length === 0
     if (failemail) {
       setEmaiError('Email is required')
     } else {
       setEmaiError('')
     }
 
-    const failusername = !username || username.length === 0
+    const failusername = !userInfo.username || userInfo.username.length === 0
     if (failusername) {
       setUsernameError('Username is required!!')
     } else {
       setUsernameError('')
+    }
+
+    const failPassword = !userInfo.password || userInfo.password.length < 3
+    if (failPassword) {
+      setPasswordError('Password is required!')
+    } else {
+      setPasswordError('')
     }
 
     if (failPassword || failusername || failemail) {
@@ -71,10 +88,10 @@ const Signup = ({}) => {
         <div className='side_bg'>
           <img src={side_bg2} alt='' />
         </div>
-        <form onSubmit={e => SubmitSignup(e)}>
+        <form>
           <h1>Sign Up</h1>
           <div className='input-field'>
-            <label htmlFor='email'>EMAIL</label>
+            <label htmlFor='email'>Email</label>
             <input
               style={
                 emailError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}
@@ -82,13 +99,12 @@ const Signup = ({}) => {
               type='email'
               name='email'
               placeholder='Enter email'
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => handleChange(e)}
             />
             {emailError ? <p className='error-message'>{emailError}</p> : ''}
           </div>
           <div className='input-field'>
-            <label htmlFor='username'>username</label>
+            <label htmlFor='username'>Username</label>
             <input
               style={
                 usernameError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}
@@ -96,8 +112,7 @@ const Signup = ({}) => {
               type='text'
               name='username'
               placeholder='Enter username'
-              value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={e => handleChange(e)}
             />
             {usernameError ? (
               <p className='error-message'>{usernameError}</p>
@@ -106,7 +121,7 @@ const Signup = ({}) => {
             )}
           </div>
           <div className='input-field'>
-            <label htmlFor='password'>PASSWORD</label>
+            <label htmlFor='password'>Password</label>
             <input
               style={
                 passwordError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}
@@ -114,8 +129,7 @@ const Signup = ({}) => {
               type='password'
               name='password'
               placeholder='Enter password'
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => handleChange(e)}
             />
             {passwordError ? (
               <p className='error-message'>{passwordError}</p>
@@ -123,13 +137,37 @@ const Signup = ({}) => {
               ''
             )}
           </div>
-          <button type='submit'>Sign Up</button>
-          <div class='or-container'>
-            <span class='or-text'>or</span>
-          </div>
-          <button type='submit' style={{ marginTop: '0px' }}>
-            <FaGoogle /> Sign Up with Google
+          <button
+            type='submit'
+            onClick={event => {
+              handleRegister(event)
+            }}
+          >
+            Sign Up
           </button>
+          <div className='or-container'>
+            <span className='or-text'>or</span>
+          </div>
+          <GoogleLogin
+            disabled={false}
+            className='google-btn'
+            disabledStyle={{
+              margin: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontSize: '16px',
+              padding: 0,
+              border: '1px rgba(0, 0, 0, 0.385) solid',
+              width: '100%',
+              boxShadow: 'none',
+              borderRadius: '5px'
+            }}
+            clientId='YOUR_GOOGLE_CLIENT_ID'
+            buttonText='Login with Google'
+            // onSuccess={responseGoogle}
+            // onFailure={responseGoogle}
+            cookiePolicy={'single_host_origin'}
+          />
           <div>
             <p>
               Already have an account?{' '}

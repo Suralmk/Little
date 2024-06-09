@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import '../style.css'
 import { useState } from 'react'
-import { side_bg2 } from '../../assets'
+import { pyramids, ppbg } from '../../assets'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../Config/config'
 
@@ -20,17 +20,9 @@ const CreateNewPassword = ({ setIsAuthenticated, HomeUpdate }) => {
       const checkResponse = await api.get(`/reset-password/${uidb64}/${token}/`)
       if (checkResponse.data.valid) {
         navigate(`/reset-password/${uidb64}/${token}`)
-      } else {
-        navigate('/not-found')
       }
     } catch (err) {
-      navigate(
-        '/not-found'
-        // (data = {
-        //   error:
-        //     'Error reseting your passsword \n Maybe the link is invalid is or expired'
-        // })
-      )
+      console.log(err)
     }
   }
 
@@ -80,12 +72,12 @@ const CreateNewPassword = ({ setIsAuthenticated, HomeUpdate }) => {
     <div className='auth-form  d_flex'>
       <div className='auth-form-container'>
         <div className='side_bg'>
-          <img src={side_bg2} alt='' />
+          <img src={ppbg} alt='' />
         </div>
         <form action='/' onSubmit={e => submitLogin(e)} className=''>
           <h1>Create Password </h1>
           <div className='input-field '>
-            <label htmlFor='password'>PASSWORD</label>
+            <label htmlFor='password'>Password</label>
             <input
               style={
                 passwordError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}
@@ -104,7 +96,7 @@ const CreateNewPassword = ({ setIsAuthenticated, HomeUpdate }) => {
           </div>
 
           <div className='input-field '>
-            <label htmlFor='password'>confirm PASSWORD</label>
+            <label htmlFor='password'>Confirm Password</label>
             <input
               style={
                 passwordError2 ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}

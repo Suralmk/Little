@@ -1,53 +1,72 @@
 import React from 'react'
 import '../style.css'
-
+import { GoogleLogin } from 'react-google-login'
 import { Link } from 'react-router-dom'
-import { useState, useReducer } from 'react'
-import { useNavigate, useLocation, Navigate } from 'react-router-dom'
-import { side_bg, side_bg2 } from '../../assets'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FaGoogle } from 'react-icons/fa'
-import api from '../../Config/config'
+import { api } from '../../Core/config'
 import useGlobal from '../../Core/global'
-const Login = ({ setIsAuthenticated, HomeUpdate }) => {
-  const authed = useGlobal(state => state.authed)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+const Login = ({}) => {
+  const login = useGlobal(state => state.login)
+  const addToast = useGlobal(state => state.addToast)
+  const setLoading = useGlobal(state => state.setLoading)
+  const navigate = useNavigate()
 
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    password: ''
+  })
   const [passwordError, setPasswordError] = useState('')
   const [emailError, setEmaiError] = useState('')
-  const [usernameError, setUsernameError] = useState('')
 
-  const navigate = useNavigate()
-  const submitLogin = async e => {
-    e.preventDefault()
+  const handleChange = e => {
+    setUserInfo({
+      ...userInfo,
+      [e.target.name]: e.target.value
+    })
+  }
 
-    if (validateLogin() == false) {
+  const handleLogin = async event => {
+    event.preventDefault()
+
+    if (validateLogin() === false) {
       return
     } else {
+      setLoading(true)
       try {
-        const reponse = await api.post('login/', {
-          email: email,
-          password: password
+        const res = await api.post('login/', userInfo, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
-        const username = reponse.data['username']
-        localStorage.setItem('username', username)
-        setIsAuthenticated(true)
-        navigate('/')
+
+        if (res.status === 200) {
+          navigate('/')
+          login(res.data)
+          addToast('Succesfully Logged In!', 'success')
+        }
       } catch (err) {
-        console.log(err.message)
+        console.log(err)
+        if (err.response) {
+          addToast(`${err.response.data.detail}`, 'failure')
+        } else {
+          addToast(`There is a ${err.message}!`, 'failure')
+        }
       }
+      setLoading(false)
     }
   }
 
   const validateLogin = () => {
-    const failEmail = !email || email.length === 0
+    const failEmail = !userInfo.email || userInfo.email.length === 0
     if (failEmail) {
       setEmaiError('Email is required!')
     } else {
       setEmaiError('')
     }
 
-    const failPassword = !password || password.length < 2
+    const failPassword = !userInfo.password || userInfo.password.length < 2
     if (failPassword) {
       setPasswordError('Password is required!')
     } else {
@@ -58,13 +77,31 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
       return false
     }
   }
+
+  const responseGoogle = response => {
+    api
+      .post('http://localhost:8000/auth/google/', {
+        access_token: response.tokenId
+      })
+      .then(res => {
+        console.log(res.data)
+        // Store tokens in localStorage or context
+        localStorage.setItem('access_token', res.data.access)
+        localStorage.setItem('refresh_token', res.data.refresh)
+        // Handle successful authentication
+      })
+      .catch(err => {
+        console.error(err)
+        // Handle errors
+      })
+  }
   return (
     <div className='auth-form d_flex'>
       <div className='auth-form-container'>
-        <form action='/' className=''>
+        <form>
           <h1>Log In</h1>
           <div className='input-field '>
-            <label htmlFor='email'>EMAIL</label>
+            <label htmlFor='email'>Email</label>
             <input
               style={
                 emailError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}
@@ -72,13 +109,14 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
               type='email'
               name='email'
               placeholder='Enter email'
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={event => {
+                handleChange(event)
+              }}
             />
             {emailError ? <p className='error-message'>{emailError}</p> : ''}
           </div>
           <div className='input-field '>
-            <label htmlFor='password'>PASSWORD</label>
+            <label htmlFor='password'>Password</label>
             <input
               style={
                 passwordError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}
@@ -86,8 +124,9 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
               type='password'
               name='password'
               placeholder='Enter password'
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={event => {
+                handleChange(event)
+              }}
             />
             {passwordError ? (
               <p className='error-message'>{passwordError}</p>
@@ -100,19 +139,38 @@ const Login = ({ setIsAuthenticated, HomeUpdate }) => {
               Forgot Password?
             </Link>
           </p>
-          <button type='submit'>Log In</button>
-          <div class='or-container'>
-            <span class='or-text'>or</span>
-          </div>
           <button
             type='submit'
-            style={{ marginTop: '0px' }}
-            onClick={() => {
-              authed()
+            onClick={event => {
+              handleLogin(event)
             }}
           >
-            <FaGoogle /> Log In with Google
+            Log In
           </button>
+          <div className='or-container'>
+            <span className='or-text'>or</span>
+          </div>
+
+          <GoogleLogin
+            disabled={false}
+            className='google-btn'
+            disabledStyle={{
+              margin: 0,
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontSize: '16px',
+              padding: 0,
+              border: '1px rgba(0, 0, 0, 0.385) solid',
+              width: '100%',
+              boxShadow: 'none',
+              borderRadius: '5px'
+            }}
+            clientId='YOUR_GOOGLE_CLIENT_ID'
+            buttonText='Login with Google'
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={'single_host_origin'}
+          />
 
           <p>
             Doesn't have an account?{' '}

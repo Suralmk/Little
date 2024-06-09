@@ -26,6 +26,7 @@ code {
   --link:rgba(8, 8, 105, 0.9);
 
   --bg-gradient: linear-gradient(50deg, rgba(194,241,182,0.2) 24%, rgba(64,202,179,0.2) 51%, rgba(35,11,143,0.2) 90%);
+  --bg-gradient2: linear-gradient(50deg, rgba(194,241,182,0.1) 24%, rgba(64,202,179,0.1) 51%, rgba(35,11,143,0.1) 90%);
 }
 @keyframes fadeIn  {
   0% {

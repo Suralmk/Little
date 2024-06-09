@@ -5,8 +5,8 @@ import { Route, Navigate, Routes } from 'react-router-dom'
 import useGlobal from './global'
 
 const ProtectedRoute = ({ children }) => {
-  //const authenticated = useGlobal(state => state.authenticated)
-  const [authenticated, setAuthenticated] = useState(true)
+  const authenticated = useGlobal(state => state.authenticated)
+  //const [authenticated, setAuthenticated] = useState(false)
   if (!authenticated) {
     return <Navigate to='/login' />
   }

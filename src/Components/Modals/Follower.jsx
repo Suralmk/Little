@@ -1,7 +1,6 @@
 import React from 'react'
 import { PiXLight, PiMagnifyingGlassLight } from 'react-icons/pi'
-import { Link } from 'react-router-dom'
-import { stewie } from '../../assets'
+
 const Follower = ({ closeFollowerModal, open, followers }) => {
   return (
     <div className={`modal ${open ? 'modal-open' : ''}`}>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FaPlus, FaEdit } from 'react-icons/fa'
+import { side_bg2, side_bg } from '../assets'
 import api from '../Config/config'
 import ChangeProfilePic from './Modals/ChangeProfilePic'
 import ChangeBgPic from './Modals/ChangeBgPic'
-
+import useGlobal from '../Core/global'
 const Profile = ({
-  pro,
   openFollowerModal,
   followerModal,
   followingModal,
@@ -16,11 +16,13 @@ const Profile = ({
   const [changeProfilePicModal, setchangeProfilePicModal] = useState(false)
   const [changeBgPicModal, setChangeBgPicModal] = useState(false)
 
+  const user = useGlobal(state => state.user)
+
   return (
     <React.Fragment>
       <div className='profile' id='profile'>
         <div className='profile-bg-pic'>
-          <img src={pro.bg_pic} alt='' />
+          <img src={user.profile.bg_pic} alt='' />
           <div
             className='bg-pic-edit'
             onClick={() => setChangeBgPicModal(!changeBgPicModal)}
@@ -32,7 +34,7 @@ const Profile = ({
           </div>
         </div>
         <div className='profile-pic'>
-          <img src={pro.profile_pic} alt='' />
+          <img src={user.profile.profile_pic} alt='' />
           <div
             className='profile-image-edit-plus'
             onClick={() => setchangeProfilePicModal(!changeProfilePicModal)}
@@ -41,24 +43,19 @@ const Profile = ({
           </div>
         </div>
         <div className='profile-name'>
-          <Link
-            state={{ profile: pro }}
-            to={`/profile/${localStorage.getItem('username').toLowerCase()}/`}
-          >
-            {pro.full_name}
-          </Link>
+          <Link to={`/profile/`}>{user.profile.full_name}</Link>
         </div>
         <div className='profile-bio'>
-          <p>{pro.username}</p>
+          <p>{user.profile.user.username}</p>
         </div>
         <div className='profile-bio'>
-          <p>{pro.bio}</p>
+          <p>{user.profile.bio}</p>
         </div>
         <div className='profile-bio'>
-          <p>{pro.personal_intrests}</p>
+          <p>{user.profile.personal_intrests}</p>
         </div>
         <div className='profile-bio'>
-          <p>{pro.phone_no}</p>
+          <p>{user.profile.location}</p>
         </div>
         <div className='profile-hashtags'>
           <p>#ai #Linkedin #django #django-restframework #web-deveopment</p>
@@ -70,9 +67,9 @@ const Profile = ({
                 openFollowerModal(!followerModal)
               }}
             >
-              followers{' '}
+              followers
             </Link>{' '}
-            {pro.follower.length}
+            {user.profile.follower.length}
           </div>
           <div className='profile-follower'>
             <Link
@@ -82,7 +79,7 @@ const Profile = ({
             >
               Following{' '}
             </Link>{' '}
-            {pro.following.length}
+            {user.profile.following.length}
           </div>
         </div>
         <div className='profile-activity'>
@@ -99,17 +96,16 @@ const Profile = ({
       <ChangeProfilePic
         open={changeProfilePicModal}
         closeChnageProfilePic={setchangeProfilePicModal}
-        profile_pic={pro.profile_pic}
-        username={pro.user.username}
+        profile_pic={user.profile.profile_pic}
         forceUpdatePro={forceUpdatePro}
       />
-      <ChangeBgPic
+      {/* <ChangeBgPic
         open={changeBgPicModal}
         closeChangeBgPic={setChangeBgPicModal}
         bg_pic={pro.bg_pic}
         username={pro.user.username}
         forceUpdatePro={forceUpdatePro}
-      />
+      /> */}
     </React.Fragment>
   )
 }

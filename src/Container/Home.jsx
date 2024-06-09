@@ -6,14 +6,16 @@ import Ad from '../Components/Ad'
 import Follower from '../Components/Modals/Follower'
 import Premium from '../Components/Premium'
 import Following from '../Components/Modals/Following'
-import api from '../Config/config'
+import { api } from '../Core/config'
+import useGlobal from '../Core/global'
 import { useState, useEffect, useReducer } from 'react'
 
-const Home = ({ ignored, forceUpdate, isAuthenticated }) => {
+const Home = ({ ignored }) => {
   const [posts, setPosts] = useState([])
-  const [userData, SetUserData] = useState(localStorage.getItem('username'))
-  const [profile, setProfile] = useState([])
   const [updateProfile, forceUpdatePro] = useReducer(x => x + 1, 0)
+  const setLoading = useGlobal(state => state.setLoading)
+  const user = useGlobal(state => state.user)
+  const addToast = useGlobal(state => state.addToast)
 
   const fetchPosts = async () => {
     try {
@@ -22,23 +24,14 @@ const Home = ({ ignored, forceUpdate, isAuthenticated }) => {
       setPosts(data)
     } catch (err) {
       console.log(err.message)
-    }
-  }
-
-  const fetchProfile = async () => {
-    try {
-      const response = await api.get(`/${userData.toLowerCase()}/`)
-      const data = response.data
-      setProfile(data)
-    } catch (err) {
-      console.log(err.message)
+      addToast(`${err.message}`, 'failure')
     }
   }
 
   useEffect(() => {
-    fetchPosts()
-    fetchProfile()
-  }, [ignored, updateProfile])
+    setLoading(true)
+    fetchPosts().then(() => setLoading(false))
+  }, [ignored])
 
   const [editProfile, setEditProfile] = useState(false)
   const [showFollowerModal, setshowFollowerModal] = useState(false)
@@ -47,39 +40,24 @@ const Home = ({ ignored, forceUpdate, isAuthenticated }) => {
   return (
     <div className='home-page'>
       <div className='home-profile' id='home-profile'>
-        {isAuthenticated
-          ? profile.map((pro, id) => (
-              <Profile
-                pro={pro}
-                OpEditProfile={setEditProfile}
-                editProfile={editProfile}
-                openFollowerModal={setshowFollowerModal}
-                followerModal={showFollowerModal}
-                followingModal={showFollowingModal}
-                openFollowingModal={setshowFollowingModal}
-                key={id}
-                forceUpdatePro={forceUpdatePro}
-              />
-            ))
-          : ''}
+        <Profile
+          openFollowerModal={setshowFollowerModal}
+          followerModal={showFollowerModal}
+          openFollowingModal={setshowFollowingModal}
+          followingModal={showFollowingModal}
+        />
 
-        {profile.map((pro, id) => (
-          <Follower
-            open={showFollowerModal}
-            closeFollowerModal={setshowFollowerModal}
-            followers={pro.follower}
-            key={id}
-          />
-        ))}
+        <Follower
+          closeFollowerModal={setshowFollowerModal}
+          open={showFollowerModal}
+          followers={user.profile.follower}
+        />
 
-        {profile.map((pro, id) => (
-          <Following
-            open={showFollowingModal}
-            closeFollowingModal={setshowFollowingModal}
-            followings={pro.following}
-            key={id}
-          />
-        ))}
+        <Following
+          open={showFollowingModal}
+          closeFollowingModal={setshowFollowingModal}
+          followings={user.profile.following}
+        />
 
         <Premium />
       </div>

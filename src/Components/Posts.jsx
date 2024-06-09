@@ -7,7 +7,8 @@ import { Link } from 'react-router-dom'
 import './style.css'
 import './Modals/modals.css'
 import Comments from './Modals/Comments'
-import api from '../Config/config'
+import { api } from '../Core/config'
+import useGlobal from '../Core/global'
 
 const Post = ({ post, tags, forceUpdatePro }) => {
   const commentinput = useRef()
@@ -15,6 +16,10 @@ const Post = ({ post, tags, forceUpdatePro }) => {
   const [ignored, forceUpdate] = useReducer(x => x + 1, 0)
   const [ignoredComment, forceUpdateComment] = useReducer(x => x + 1, 0)
   const [showCommentsModal, setshowCommentsModal] = useState(false)
+
+  const setLoading = useGlobal(state => state.setLoading)
+  const authenticated = useGlobal(state => state.authenticated)
+  const addToast = useGlobal(state => state.addToast)
 
   const [postComments, setPostComments] = useState([])
   const getPostComments = async url => {

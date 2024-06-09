@@ -8,13 +8,12 @@ html {
     backdrop-filter: blur(5px);
     display: flex;
     justify-content: space-between;
-    z-index: 10;
+    z-index: 5;
     width: 100%;
     transition: all 0.3s;
     backdrop-filter: blur(15px);
     align-items: center;
     position: relative;
-
 }
 .nav p{
     font-size: 40px;
@@ -29,8 +28,6 @@ html {
     padding: 5px 10px;
     transition: 0.4s;
     margin: 0 15px;
-    /* display: flex;
-    align-items: center; */
 }
 .nav ul li a:active {
     color: rgba(35, 11, 143, 0.318) ;
@@ -322,7 +319,6 @@ html {
     transition: all 0.4s;
     display: flex;
     gap: 5px;
-    
 }
 .bg-pic-edit:hover {
     backdrop-filter: blur(2px);
@@ -349,11 +345,9 @@ html {
     margin: 55px 0  0 5px;
     width: 100px;
     height: 100px;
-    background:rgba(2, 110, 105, 0.541);
+    background:rgba(255, 255, 255, 0.897);
     border-radius: 50%;
     position: relative;
-    
-
 }
 .profile-image-edit-plus{
     background: rgba(255, 255, 255);
@@ -569,8 +563,6 @@ Message List Component
     padding: 10px;
 }
 
-
-
 /*===================
 Premium
 ====================*/
@@ -606,15 +598,61 @@ Premium
     background: linear-gradient( to right rgb(232, 248, 0) rgb(143, 106, 106));
 }
 
-
-
-
 @media screen and (max-width:1000px) {
     .moniter-menu {
         display: none;
     }
     .mobile-menu-btn {
         display: block;
-    }
-    
+    }    
 }
+
+/*===================
+Toast
+====================*/
+.toast {
+    font-weight: lighter;
+    font-size: 16px;
+    color:rgba(41, 40, 40, 0.767);
+    padding: 15px;
+    width: 300px;
+    height: auto;
+    position: fixed;
+    z-index: 10;
+    top: 20px;
+    right: 30px;
+    border-radius: 10px;
+    border: 1px rgba(80, 79, 79, 0.26) solid;
+}
+
+.toast.success-toast {
+    background-color : #c4fab6;
+}
+.toast.failure-toast {
+    background-color : #f5aeaa;
+}
+/*===================
+    Skeleton Loading
+====================*/
+
+.skeleton-loading {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .skeleton-loading-item {
+    height: 20px; /* Adjust height as needed */
+    margin-bottom: 10px; /* Adjust spacing between items */
+    background-color: #f0f0f0; /* Placeholder color */
+    border-radius: 4px; /* Rounded corners */
+    animation: shimmer 2s infinite linear; /* Animation for shimmer effect */
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }

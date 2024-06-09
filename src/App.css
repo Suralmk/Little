@@ -5,7 +5,7 @@
 
 }
 body {
-        background: rgba(233, 232, 232, 0.904);
+        background: var(--bg-gradient2)
 }
 a {
     text-decoration: none;
@@ -67,7 +67,7 @@ textarea {
 }
 @media screen and (max-width : 800px) {
     * {
-        font-family:Verdana, Geneva, Tahoma, sans-serif;
-        font-size: 18px;
+        font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
     }
 }
+

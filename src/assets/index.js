@@ -7,6 +7,7 @@ import side_bg from './img/side-bg.jpg'
 import stewie_stand from './img/stewie-stand.png'
 import side_bg2 from './img/side_bg2.jpg'
 import slide_3 from './img/slide-3.jpg'
+import spinner from './img/spinner.svg'
 
 export {
   pyramids,
@@ -17,5 +18,6 @@ export {
   side_bg,
   stewie_stand,
   side_bg2,
-  slide_3
+  slide_3,
+  spinner
 }

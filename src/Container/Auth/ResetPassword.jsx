@@ -55,7 +55,7 @@ const ResetPassword = ({ setIsAuthenticated, HomeUpdate }) => {
         <form action='/' onSubmit={e => submitLogin(e)} className=''>
           <h1>Reset Password </h1>
           <div className='input-field '>
-            <label htmlFor='email'>EMAIL</label>
+            <label htmlFor='email'>Email</label>
             <input
               style={
                 emailError ? { borderColor: 'rgba(255, 0, 0, 0.753)' } : {}

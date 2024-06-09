@@ -1,5 +1,5 @@
 import './App.css'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import Home from './Container/Home'
 import CreatePost from './Container/CreatePost'
@@ -12,17 +12,30 @@ import { Routes, BrowserRouter as Router, Route } from 'react-router-dom'
 import NotFound from './Container/NotFound'
 import SearchResult from './Container/SearchResult'
 import Layout from './Container/Layout'
-import ProtectedRoute from './Core/ProtectedRoute'
+import Loading from './Components/Loading'
+import ToastContainer from './Container/ToastContainer'
 // auth
 import Login from './Container/Auth/Login'
 import Signup from './Container/Auth/Signup'
 import ResetPassword from './Container/Auth/ResetPassword'
 import CreateNewPassword from './Container/Auth/CreateNewPasssword'
 import ResetEmailSend from './Container/Auth/ResetEmailSend'
-
+//global
+import ProtectedRoute from './Core/ProtectedRoute'
+import useGlobal from './Core/global'
 function App () {
+  const loading = useGlobal(state => state.loading)
+  const authenticated = useGlobal(state => state.authenticated)
+  const init = useGlobal(state => state.init)
+
+  useEffect(() => {
+    init()
+  })
+
   return (
     <Router>
+      <ToastContainer />
+      {loading ? <Loading /> : <></>}
       <Routes>
         <Route path='/' element={<Layout />}>
           <Route
@@ -91,14 +104,20 @@ function App () {
             }
           />
         </Route>
-        <Route path='/register' element={<Signup />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/reset-password' element={<ResetPassword />} />
-        <Route
-          path='/reset-password/:uidb64/:token'
-          element={<CreateNewPassword />}
-        />
-        <Route path='/email-send' element={<ResetEmailSend />} />
+        {!authenticated ? (
+          <>
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Signup />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
+            <Route
+              path='/reset-password/:uidb64/:token'
+              element={<CreateNewPassword />}
+            />
+            <Route path='/email-send' element={<ResetEmailSend />} />
+          </>
+        ) : (
+          <></>
+        )}
         <Route path='/*' element={<NotFound />} />
       </Routes>
     </Router>
