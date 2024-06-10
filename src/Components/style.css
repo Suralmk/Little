@@ -658,10 +658,26 @@ Toast
   }
  .loading-header-name{
     width: 150px;
-    height: 20px; 
+    height: 13px; 
     background: rgb(233,245,242);
     background: linear-gradient(86deg, rgba(233,245,242,0.9108018207282913) 18%, rgba(242,246,249,1) 47%, rgba(233,245,242,1) 79%);
-    animation: shimmer 4s infinite linear; 
+    animation: shimmer 8s infinite linear; 
+    border-radius: 4px; 
+  }
+ .loading-header-username{
+    width: 100px;
+    height: 13px; 
+    background: rgb(233,245,242);
+    background: linear-gradient(86deg, rgba(233,245,242,0.9108018207282913) 18%, rgba(242,246,249,1) 47%, rgba(233,245,242,1) 79%);
+    animation: shimmer 8s infinite linear; 
+    border-radius: 4px; 
+  }
+ .loading-header-time{
+    width: 170px;
+    height: 13px; 
+    background: rgb(233,245,242);
+    background: linear-gradient(86deg, rgba(233,245,242,0.9108018207282913) 18%, rgba(242,246,249,1) 47%, rgba(233,245,242,1) 79%);
+    animation: shimmer 8s infinite linear; 
     border-radius: 4px; 
   }
   .skeleton-loading-item-title {
@@ -682,11 +698,10 @@ Toast
   
   .loading-post-owner-profile-pic{
     height: 50px; 
-
     background: rgb(233,245,242);
     background: linear-gradient(86deg, rgba(233,245,242,0.9108018207282913) 18%, rgba(242,246,249,1) 47%, rgba(233,245,242,1) 79%);
     border-radius: 4px; 
-    animation: shimmer 15s infinite linear; 
+    animation: shimmer 18s infinite linear; 
     border-radius: 50%;
     width: 70px;
     height: 70px;

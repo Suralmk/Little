@@ -10,7 +10,8 @@ const SkeletonPostsLoading = () => {
         <div className='loading-post-owner-profile-pic'></div>
         <div className='loading-post-header-detail'>
           <div className='loading-header-name'></div>
-          <div className='loading-header-name'></div>
+          <div className='loading-header-username'></div>
+          <div className='loading-header-time'></div>
         </div>
       </div>
       <div className='loadig-content'>

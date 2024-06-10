@@ -67,11 +67,17 @@ const Home = ({ ignored }) => {
       </div>
       <div className='home-posts'>
         {postLoading ? (
-          <>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 15
+            }}
+          >
             <SkeletonPostsLoading />
             <SkeletonPostsLoading />
             <SkeletonPostsLoading />
-          </>
+          </div>
         ) : (
           <>
             {posts.map((posts, id) => (
