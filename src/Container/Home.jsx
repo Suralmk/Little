@@ -9,6 +9,7 @@ import Following from '../Components/Modals/Following'
 import { api } from '../Core/config'
 import useGlobal from '../Core/global'
 import { useState, useEffect, useReducer } from 'react'
+import SkeletonPostsLoading from '../Components/SkeletonLoaderPosts'
 
 const Home = ({ ignored }) => {
   const [posts, setPosts] = useState([])
@@ -16,12 +17,15 @@ const Home = ({ ignored }) => {
   const setLoading = useGlobal(state => state.setLoading)
   const user = useGlobal(state => state.user)
   const addToast = useGlobal(state => state.addToast)
+  const postLoading = useGlobal(state => state.postLoading)
+  const setPostLoading = useGlobal(state => state.setPostLoading)
 
   const fetchPosts = async () => {
     try {
       const response = await api.get('posts/')
       const data = response.data
       setPosts(data)
+      setPostLoading(false)
     } catch (err) {
       console.log(err.message)
       addToast(`${err.message}`, 'failure')
@@ -29,8 +33,8 @@ const Home = ({ ignored }) => {
   }
 
   useEffect(() => {
-    setLoading(true)
-    fetchPosts().then(() => setLoading(false))
+    setPostLoading(true)
+    fetchPosts()
   }, [ignored])
 
   const [editProfile, setEditProfile] = useState(false)
@@ -62,9 +66,19 @@ const Home = ({ ignored }) => {
         <Premium />
       </div>
       <div className='home-posts'>
-        {posts.map((posts, id) => (
-          <Posts post={posts} forceUpdatePro={forceUpdatePro} key={id} />
-        ))}
+        {postLoading ? (
+          <>
+            <SkeletonPostsLoading />
+            <SkeletonPostsLoading />
+            <SkeletonPostsLoading />
+          </>
+        ) : (
+          <>
+            {posts.map((posts, id) => (
+              <Posts post={posts} forceUpdatePro={forceUpdatePro} key={id} />
+            ))}
+          </>
+        )}
       </div>
       <div className='home-additional' id='home-additional'>
         <div className='home-ad' id='home-ad'>

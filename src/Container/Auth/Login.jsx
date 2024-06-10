@@ -1,11 +1,10 @@
 import React from 'react'
 import '../style.css'
-import { GoogleLogin } from 'react-google-login'
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaGoogle } from 'react-icons/fa'
-import { api } from '../../Core/config'
+import { api, googleapi } from '../../Core/config'
 import useGlobal from '../../Core/global'
 const Login = ({}) => {
   const login = useGlobal(state => state.login)
@@ -35,17 +34,19 @@ const Login = ({}) => {
     } else {
       setLoading(true)
       try {
-        const res = await api.post('login/', userInfo, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (res.status === 200) {
-          navigate('/')
-          login(res.data)
-          addToast('Succesfully Logged In!', 'success')
-        }
+        const res = await api
+          .post('login/', userInfo, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(res => {
+            if (res.status === 200) {
+              login(res.data)
+              navigate('/')
+              addToast('Succesfully Logged In!', 'success')
+            }
+          })
       } catch (err) {
         console.log(err)
         if (err.response) {
@@ -78,22 +79,24 @@ const Login = ({}) => {
     }
   }
 
-  const responseGoogle = response => {
-    api
-      .post('http://localhost:8000/auth/google/', {
+  const handleGoogle = async response => {
+    setLoading(true)
+    await googleapi
+      .post('/auth/convert-token/', {
         access_token: response.tokenId
       })
       .then(res => {
         console.log(res.data)
-        // Store tokens in localStorage or context
-        localStorage.setItem('access_token', res.data.access)
-        localStorage.setItem('refresh_token', res.data.refresh)
-        // Handle successful authentication
+        login(res.data)
       })
       .catch(err => {
         console.error(err)
-        // Handle errors
       })
+    setLoading(false)
+  }
+
+  const handleLoginFailure = () => {
+    console.error('Login Failed')
   }
   return (
     <div className='auth-form d_flex'>
@@ -150,27 +153,12 @@ const Login = ({}) => {
           <div className='or-container'>
             <span className='or-text'>or</span>
           </div>
-
-          <GoogleLogin
-            disabled={false}
-            className='google-btn'
-            disabledStyle={{
-              margin: 0,
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontSize: '16px',
-              padding: 0,
-              border: '1px rgba(0, 0, 0, 0.385) solid',
-              width: '100%',
-              boxShadow: 'none',
-              borderRadius: '5px'
-            }}
-            clientId='YOUR_GOOGLE_CLIENT_ID'
-            buttonText='Login with Google'
-            onSuccess={responseGoogle}
-            onFailure={responseGoogle}
-            cookiePolicy={'single_host_origin'}
-          />
+          <GoogleOAuthProvider clientId='YOUR_GOOGLE_CLIENT_ID'>
+            <GoogleLogin
+              onSuccess={handleGoogle}
+              onError={handleLoginFailure}
+            />
+          </GoogleOAuthProvider>
 
           <p>
             Doesn't have an account?{' '}

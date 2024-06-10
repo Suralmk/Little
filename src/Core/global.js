@@ -14,6 +14,12 @@ const useGlobal = create(set => ({
       loading: val
     }))
   },
+  postLoading: false,
+  setPostLoading: val => {
+    set(state => ({
+      postLoading: val
+    }))
+  },
   //Toast
   toasts: [],
   addToast: (message, type = 'info') => {

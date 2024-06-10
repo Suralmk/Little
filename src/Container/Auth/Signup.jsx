@@ -2,7 +2,8 @@ import React from 'react'
 import '../style.css'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { GoogleLogin } from 'react-google-login'
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
+
 import { side_bg2 } from '../../assets/index'
 import { useNavigate } from 'react-router-dom'
 import useGlobal from '../../Core/global'
@@ -148,7 +149,13 @@ const Signup = ({}) => {
           <div className='or-container'>
             <span className='or-text'>or</span>
           </div>
-          <GoogleLogin
+          <GoogleOAuthProvider clientId='YOUR_GOOGLE_CLIENT_ID'>
+            <GoogleLogin
+            // onSuccess={responseGoogle}
+            // onError={responseGoogle}
+            />
+          </GoogleOAuthProvider>
+          {/* <GoogleLogin
             disabled={false}
             className='google-btn'
             disabledStyle={{
@@ -167,7 +174,7 @@ const Signup = ({}) => {
             // onSuccess={responseGoogle}
             // onFailure={responseGoogle}
             cookiePolicy={'single_host_origin'}
-          />
+          /> */}
           <div>
             <p>
               Already have an account?{' '}
