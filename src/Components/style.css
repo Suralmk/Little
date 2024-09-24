@@ -4,7 +4,7 @@ html {
 }
 .nav {
     padding:  5px 0;
-    background: rgba(255, 255, 255, 0.849);
+    background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(5px);
     display: flex;
     justify-content: space-between;
@@ -13,7 +13,12 @@ html {
     transition: all 0.3s;
     backdrop-filter: blur(15px);
     align-items: center;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.web-logo {
+    font-size: 40px;
 }
 .nav p{
     font-size: 40px;
@@ -22,12 +27,14 @@ html {
 .nav .moniter-menu {
     width: auto;
     align-items: center;
-    margin-right: 20px;
+    margin-right: 10px;
 }
+
 .nav ul li {
     padding: 5px 10px;
     transition: 0.4s;
     margin: 0 15px;
+
 }
 .nav ul li a:active {
     color: rgba(35, 11, 143, 0.318) ;
@@ -45,9 +52,9 @@ html {
     position: absolute;
     display: none;
     background: white;
-    width: 120px;
-    left: 0;
-    top: 40px;
+    width: 150px;
+    right: -10px;
+    top: 45px;
     box-shadow: var(--box-shadow);
     padding: 10px 0;
     animation: fadeIn 0.5s;
@@ -82,28 +89,30 @@ html {
     justify-content: center;
 }
 .search-list .input-field {
-    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
 }
-.search-icon {
+.mobile-menu .search-list .input-field input{    
+    display: none;
     position: absolute;
-    top: 50%;
-    bottom: 50%;
-    transform: translateY(-50%);
-    right: 10px;
+  right: 0;
+  z-index: 10;
+  background: rgb(255, 255, 255);
+  top: 10px;
+  right: 38px;
+  width: calc(60%);
+
 }
+.search-list .input-field input.search-input-show {    
+    display: block;
+}
+
 /* Mobile Menu Nav style */
-.mobile-menu {
-    position: fixed;
-    flex-direction: column;
-    background: white;
-    min-height: 300px;
-    max-height: 350px;
-    width:calc(100% - 40px) ;
-    padding: 30px 20px;
-    top: 0;
-    right: 0;
-    margin-right: 0;
-    animation: fadeToLeft 0.7s ease-in-out;
+.nav .mobile-menu {
+display: none;
+    width: auto;
+    align-items: center;
 }
 .mobile-menu-btn {
     margin-right:20px ;
@@ -113,6 +122,18 @@ html {
     gap: 10px;
     justify-content: start;
     font-size: 20px;
+}
+
+@media screen and (max-width:650px) {
+    .moniter-menu {
+        display: none;
+    }
+    .nav .mobile-menu {
+        display: flex;
+    }  
+    .web-logo {
+        font-size: 35px;
+    }  
 }
 /*
 ========================
@@ -161,7 +182,7 @@ html {
 
 }
 .post-owner-full_name {
-    font-weight: bold;
+    font-weight: 500;
 }
 .post-detail .post-username {
     font-size: 13px;
@@ -202,7 +223,10 @@ html {
     height: auto;
     border:  none;
     background: rgba(253, 216, 93, 0);
+    border-radius: 15px;
+    overflow: hidden;
 }
+
 .blog-image img{
     width: 100%;
     object-fit:cover;
@@ -306,25 +330,6 @@ html {
     background: rgba(255, 255, 255, 0.849);
     
 }
-.bg-pic-edit {
-    position: absolute;
-    top:70px ;
-    right: 5px;
-    font-size: 15px;
-    color: rgb(255, 255, 255);
-    padding: 5px 10px;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.236);
-    border-radius: 5px;
-    transition: all 0.4s;
-    display: flex;
-    gap: 5px;
-}
-.bg-pic-edit:hover {
-    backdrop-filter: blur(2px);
-    background: rgba(0, 0, 0, 0.336);
-}
-
 .profile-bg-pic {
     z-index: 0;
     height: 120px;
@@ -332,6 +337,7 @@ html {
     background: rgb(228, 226, 226);
     position: absolute;
     border-radius: 10px;
+    overflow: hidden;
 }
 .profile-bg-pic img {
     width: 100%;
@@ -349,28 +355,23 @@ html {
     border-radius: 50%;
     position: relative;
 }
-.profile-image-edit-plus{
-    background: rgba(255, 255, 255);
-    color: rgb(7, 7, 7);
-    box-shadow: var(--box-shadow2);
-    padding: 2px 5px;
-    border-radius: 50%;
-    position: absolute;
-    right: 4px;
-    top: 67%;
-    cursor: pointer;
-}
+
 .profile-pic img{
     width: 100%;
     height:100%;
     object-fit:cover;
     border-radius: 50%;
-    
 }
 .profile-name a {
-    margin-top: 10px;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
+}
+.profile-name {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 5px;
+    margin-top: 10px;
 }
 .profile-name p:active {
     color: rgba(0, 0, 0, 0.692);
@@ -411,19 +412,17 @@ html {
 ========================
 */
 .sugg {
-    z-index: -1;
+
     padding: 10px;
     position: relative;
     background: rgba(255, 255, 255, 0.849);
     border-radius: 15px;
     background: rgba(255, 255, 0, 0.267);
 }
-.sugg-people {
-}
+
 .sugg-people-title {
     font-size: 20px;
     text-transform: capitalize;
-   
 }
 .sugg-people-pro {
     padding: 15px 0;
@@ -443,17 +442,15 @@ html {
 .sugg-profile-pic {
     width: 60px;
     height: 60px;
-    padding: 10px;
     background-color: white;
-    display: flex;
-    align-items: center;
     border-radius: 50%;
+    overflow: hidden;
 
 }
 .sugg-profile-pic img {
     width: 100%;
     height: 100%;
-    object-fit:contain;
+    object-fit:cover;
 }
 
 /*
@@ -598,20 +595,13 @@ Premium
     background: linear-gradient( to right rgb(232, 248, 0) rgb(143, 106, 106));
 }
 
-@media screen and (max-width:1000px) {
-    .moniter-menu {
-        display: none;
-    }
-    .mobile-menu-btn {
-        display: block;
-    }    
-}
+
 
 /*===================
 Toast
 ====================*/
 .toast {
-    font-weight: lighter;
+    font-weight: normal;
     font-size: 16px;
     color:rgba(41, 40, 40, 0.767);
     padding: 15px;
@@ -626,10 +616,16 @@ Toast
 }
 
 .toast.success-toast {
-    background-color : #c4fab6;
+    border-color : #128112;
+    background-color: rgba(255, 255, 255, 0.4);
+     color: rgb(26, 24, 24);
+     backdrop-filter: blur(5px);
 }
 .toast.failure-toast {
-    background-color : #f5aeaa;
+    border-color : #f05851;
+    color: rgb(39, 14, 14);
+    color: rgb(26, 24, 24);
+    backdrop-filter: blur(5px);
 }
 /*===================
     Skeleton Loading
@@ -712,5 +708,17 @@ Toast
     }
     100% {
       background-position: 1000px 0;
+    }
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-color: #ddd;
+    }
+    50% {
+      background-color: #ccc;
+    }
+    100% {
+      background-color: #ddd;
     }
   }

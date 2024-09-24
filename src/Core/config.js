@@ -1,5 +1,8 @@
 import axios from 'axios'
 
+import useGlobal from './global'
+
+const token = JSON.parse(localStorage.getItem('tokens'))
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true

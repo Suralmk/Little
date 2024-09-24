@@ -1,12 +1,8 @@
 import React from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 const SearchResult = () => {
   const location = useLocation()
-  const searched = useParams()
-
-  console.log(searched)
-
   return (
     <div>
       {location.state.map((result, key) => (

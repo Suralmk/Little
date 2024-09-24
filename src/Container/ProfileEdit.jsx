@@ -1,45 +1,61 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect, useReducer } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import api from '../Config/config'
+import { api } from '../Core/config'
 import './style.css'
-const ProfileEdit = ({ forceUpdate }) => {
+import useGlobal from '../Core/global'
+import { spinner } from '../assets'
+const ProfileEdit = ({ forceUpdateProfile }) => {
   const navigate = useNavigate()
-  const username = useParams()
-  const profile = useLocation().state.profile
-  // if (username !== localStorage.getItem('username')) {
-  //   navigate('/not-found')
-  // }
-  const [updated_first_name, setFirstName] = useState(profile.first_name)
-  const [updated_last_name, setLastName] = useState(profile.last_name)
-  const [updated_phone_no, setPhoneNumber] = useState(profile.phone)
-  const [updated_bio, setBio] = useState(profile.bio)
-  const [updated_personal_intrests, setPerosnalIntrests] = useState(
-    profile.personal_intrests
-  )
-  const [updated_location, SetLocation] = useState(profile.location)
-  const [updated_birth_date, setBirthDate] = useState(profile.birth_date)
+  const [ignore, forceUpdate] = useReducer(x => x + 1, 0)
+  const token = JSON.parse(localStorage.getItem('tokens'))
+  const user = useGlobal(state => state.user)
+  const addToast = useGlobal(state => state.addToast)
+  const [loading, setLoading] = useState(false)
+  const btnref = useRef()
+  const [profile, setProfile] = useState({
+    first_name: '',
+    last_name: '',
+    location: '',
+    bio: '',
+    personal_intrests: '',
+    phone: '',
+    birth_date: ''
+  })
+
+  const handleChange = e => {
+    setProfile({
+      ...profile,
+      [e.target.name]: e.target.value
+    })
+  }
 
   const UpdateProfile = async e => {
     e.preventDefault()
-    const formData = new FormData()
-    formData.append('first_name', updated_first_name)
-    formData.append('last_name', updated_last_name)
-    formData.append('location', updated_location)
-    formData.append('bio', updated_bio)
-    formData.append('phone', updated_phone_no)
-    formData.append('birth_date', updated_birth_date)
-    formData.append('personal_intrests', updated_personal_intrests)
 
+    const formData = new FormData()
+    formData.append('first_name', profile?.first_name)
+    formData.append('last_name', profile?.last_name)
+    formData.append('location', profile?.location)
+    formData.append('bio', profile?.bio)
+    formData.append('phone', profile?.phone)
+    formData.append('birth_date', profile?.birth_date)
+    formData.append('personal_intrests', profile?.personal_intrests)
+    setLoading(true)
     try {
-      const response = await api.put(`${username.username}/update/`, formData, {
+      await api.put(`${user.profile.user.username}/update/`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token.access}`
         }
       })
+      forceUpdateProfile()
       forceUpdate()
+      addToast('Profile Updated Succesfully', 'success')
     } catch (err) {
-      console.log(err.message)
+      addToast(`Something Wrong! ${err.response.data.birth_date}`, 'failure')
     }
+
+    setLoading(false)
   }
   /* --------------------------
     Auth Update
@@ -99,7 +115,7 @@ const ProfileEdit = ({ forceUpdate }) => {
           .then(() => navigate('/'))
           .then(() => localStorage.setItem('username', newUsername))
           .then(() => {
-            forceUpdate()
+            forceUpdateProfile()
           })
         setUsernameUpdateError(response.data)
         newUsernameVal.current.value = ''
@@ -154,6 +170,23 @@ const ProfileEdit = ({ forceUpdate }) => {
       return false
     }
   }
+  const fetchCurrentUserProfile = async () => {
+    try {
+      const res = await api.get(`/${user.profile.user.username}/`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.access}`
+        }
+      })
+      setProfile(res.data)
+    } catch (err) {
+      console.log(err.response.data)
+    }
+  }
+  useEffect(() => {
+    fetchCurrentUserProfile()
+  }, [])
+
   return (
     <div className='edit-profile-container'>
       <div className='edit-profile-form' id='myModal'>
@@ -163,12 +196,12 @@ const ProfileEdit = ({ forceUpdate }) => {
           <div className='current-profile'>
             <div className='current-profile-head'>
               <div className='current-profile-image'>
-                <img src={profile.profile_pic} alt='' />
+                <img src={profile?.profile_pic} alt='' />
               </div>
               <div className='current-profile-head-content'>
-                <p>{profile.full_name}</p>
-                <p>{profile.user.email}</p>
-                <p>{profile.user.username}</p>
+                <p>{profile.first_name + ' ' + profile.last_name}</p>
+                <p>{profile?.user?.email}</p>
+                <p>{profile?.user?.username}</p>
               </div>
             </div>
             <div className='current-profile-content'>
@@ -178,23 +211,25 @@ const ProfileEdit = ({ forceUpdate }) => {
               </div>
               <div className='current-profile-section'>
                 <p>Bio</p>
-                <p className='current-profile-bio'>{profile.bio} </p>
+                <p className='current-profile-bio'>{profile?.bio} </p>
               </div>
               <div className='current-profile-section'>
                 <p>Personal Intrests</p>
                 <p className='current-profile-personal_intrests'>
-                  {profile.personal_intrests}
+                  {profile?.personal_intrests}
                 </p>
               </div>
               <div className='current-profile-sub-section'>
                 <div className='current-profile-section'>
                   <p>Location</p>
-                  <p className='current-profile-location'>{profile.location}</p>
+                  <p className='current-profile-location'>
+                    {profile?.location}
+                  </p>
                 </div>
                 <div className='current-profile-section'>
                   <p>Birth Date</p>
                   <p className='current-profile-birth_date'>
-                    {profile.birth_date}
+                    {profile?.birth_date}
                   </p>
                 </div>
               </div>
@@ -207,8 +242,8 @@ const ProfileEdit = ({ forceUpdate }) => {
                 <input
                   type='text'
                   id='first_name'
-                  value={updated_first_name}
-                  onChange={e => setFirstName(e.target.value)}
+                  value={profile.first_name}
+                  onChange={e => handleChange(e)}
                   name='first_name'
                 />
               </div>
@@ -218,8 +253,8 @@ const ProfileEdit = ({ forceUpdate }) => {
                 <input
                   type='text'
                   id='last_name'
-                  value={updated_last_name}
-                  onChange={e => setLastName(e.target.value)}
+                  value={profile.last_name}
+                  onChange={e => handleChange(e)}
                   name='last_name'
                 />
               </div>
@@ -230,8 +265,8 @@ const ProfileEdit = ({ forceUpdate }) => {
                 <label htmlFor='location'>location</label>
                 <input
                   type='text'
-                  value={updated_location}
-                  onChange={e => SetLocation(e.target.value)}
+                  value={profile.location}
+                  onChange={e => handleChange(e)}
                   id='location'
                   name='location'
                 />
@@ -243,8 +278,8 @@ const ProfileEdit = ({ forceUpdate }) => {
                   type='text'
                   id='bio'
                   name='bio'
-                  value={updated_bio}
-                  onChange={e => setBio(e.target.value)}
+                  value={profile.bio}
+                  onChange={e => handleChange(e)}
                 />
               </div>
             </div>
@@ -253,11 +288,11 @@ const ProfileEdit = ({ forceUpdate }) => {
               <div className='input-field'>
                 <label htmlFor='phone'>Phone number</label>
                 <input
-                  type='number'
+                  type='text'
                   id='phone'
                   name='phone'
-                  value={updated_phone_no}
-                  onChange={e => setPhoneNumber(e.target.value)}
+                  value={`${profile.phone}`}
+                  onChange={e => handleChange(e)}
                 />
               </div>
 
@@ -267,9 +302,9 @@ const ProfileEdit = ({ forceUpdate }) => {
                   type='date'
                   id='birth_date'
                   name='birth_date'
-                  value={updated_birth_date}
+                  value={profile.birth_date}
                   onChange={e => {
-                    setBirthDate(e.target.value)
+                    handleChange(e)
                   }}
                 />
               </div>
@@ -282,144 +317,176 @@ const ProfileEdit = ({ forceUpdate }) => {
                   type='text'
                   id='personal_intrests'
                   name='personal_intrests'
-                  value={updated_personal_intrests}
-                  onChange={e => setPerosnalIntrests(e.target.value)}
+                  value={profile.personal_intrests}
+                  onChange={e => handleChange(e)}
                 />
               </div>
               <div className='input-field'></div>
             </div>
-            <button>Save</button>
-          </form>
-        </div>
-        <a href='#auth-update' className='update-auth-link'>
-          Change Password and Authentication Credentials
-        </a>
-        <div className='update-auth-form-container' id='auth-update'>
-          <p>
-            These are major security and authentication data's so please make
-            sure to keep them safe, since they are the only way for you to
-            access your account
-          </p>
-
-          <div className='update-auth-form-container-con'>
-            <form className='update-auth-form' onSubmit={e => updateEmail(e)}>
-              <h3>Change Email</h3>
-              <div className='update-input-fields'>
-                <div className='input-field'>
-                  <input
-                    style={
-                      updateEmailError.error
-                        ? { borderColor: 'rgba(255, 0, 0, 0.753)' }
-                        : {}
-                    }
-                    type='email'
-                    id='email'
-                    name='email'
-                    placeholder='New email'
-                    onChange={e => setNewEmail(e.target.value)}
-                    ref={newEmailVal}
-                  />
-                </div>
-                <button type='submit'>Save</button>
-              </div>
-              {updateEmailError ? (
-                <p
-                  className={`${
-                    updateEmailError.error ? 'error-message' : 'success-message'
-                  }`}
-                >
-                  {updateEmailError.error
-                    ? updateEmailError.error
-                    : updateEmailError.success}
-                </p>
-              ) : (
-                <></>
-              )}
-            </form>
-
-            <form
-              className='update-auth-form'
-              onSubmit={e => updateUsername(e)}
+            <button
+              ref={btnref}
+              type='submit'
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 15,
+                justifyContent: 'center'
+              }}
+              className={loading ? 'disable-btn' : ''}
             >
-              <h3>Change Username</h3>
-              <div className='update-input-fields'>
-                <div className='input-field'>
-                  <input
-                    style={
-                      usernameUpdatedError.error
-                        ? { borderColor: 'rgba(255, 0, 0, 0.753)' }
-                        : {}
-                    }
-                    type='text'
-                    id='new-username'
-                    name='new-username'
-                    placeholder='New Username'
-                    onChange={e => setNewUsername(e.target.value)}
-                    ref={newUsernameVal}
-                  />
-                </div>
-
-                <button type='submit'>Save</button>
-              </div>
-              {usernameUpdatedError ? (
-                <p
-                  className={`${
-                    usernameUpdatedError.error
-                      ? 'error-message'
-                      : 'success-message'
-                  }`}
-                >
-                  {usernameUpdatedError.error
-                    ? usernameUpdatedError.error
-                    : usernameUpdatedError.success}
-                </p>
+              {' '}
+              Save{' '}
+              {loading ? (
+                <>
+                  <img src={spinner} alt='' />
+                </>
               ) : (
                 ''
               )}
-            </form>
-
-            <form
-              className='update-auth-form'
-              onSubmit={e => updatePassword(e)}
-            >
-              <h3>Change Password</h3>
-              <div className='update-input-fields'>
-                <div className='input-field'>
-                  <input
-                    style={
-                      updatePasswdError.error
-                        ? { borderColor: 'rgba(255, 0, 0, 0.753)' }
-                        : {}
-                    }
-                    type='password'
-                    id='updated-password'
-                    name='updated-password'
-                    placeholder='New password'
-                    ref={newPasswdVal}
-                    onChange={e => setNewPassword(e.target.value)}
-                  />
-                </div>
-
-                <button type='submit'>Save</button>
-              </div>
-              {updatePasswdError ? (
-                <p
-                  className={`${
-                    updatePasswdError.error
-                      ? 'error-message'
-                      : 'success-message'
-                  }`}
-                >
-                  {updatePasswdError.error
-                    ? updatePasswdError.error
-                    : updatePasswdError.success}
-                </p>
-              ) : (
-                <></>
-              )}
-            </form>
-          </div>
+            </button>
+          </form>
         </div>
+
+        {user.profile.user.username === 'little' ? (
+          <></>
+        ) : (
+          <>
+            <a href='#auth-update' className='update-auth-link'>
+              Change Password and Authentication Credentials
+            </a>
+            <div className='update-auth-form-container' id='auth-update'>
+              <p>
+                These are major security and authentication data's so please
+                make sure to keep them safe, since they are the only way for you
+                to access your account
+              </p>
+
+              <div className='update-auth-form-container-con'>
+                <form
+                  className='update-auth-form'
+                  onSubmit={e => updateEmail(e)}
+                >
+                  <h3>Change Email</h3>
+                  <div className='update-input-fields'>
+                    <div className='input-field'>
+                      <input
+                        style={
+                          updateEmailError.error
+                            ? { borderColor: 'rgba(255, 0, 0, 0.753)' }
+                            : {}
+                        }
+                        type='email'
+                        id='email'
+                        name='email'
+                        placeholder='New email'
+                        onChange={e => setNewEmail(e.target.value)}
+                        ref={newEmailVal}
+                      />
+                    </div>
+                    <button type='submit'>Save</button>
+                  </div>
+                  {updateEmailError ? (
+                    <p
+                      className={`${
+                        updateEmailError.error
+                          ? 'error-message'
+                          : 'success-message'
+                      }`}
+                    >
+                      {updateEmailError.error
+                        ? updateEmailError.error
+                        : updateEmailError.success}
+                    </p>
+                  ) : (
+                    <></>
+                  )}
+                </form>
+
+                <form
+                  className='update-auth-form'
+                  onSubmit={e => updateUsername(e)}
+                >
+                  <h3>Change Username</h3>
+                  <div className='update-input-fields'>
+                    <div className='input-field'>
+                      <input
+                        style={
+                          usernameUpdatedError.error
+                            ? { borderColor: 'rgba(255, 0, 0, 0.753)' }
+                            : {}
+                        }
+                        type='text'
+                        id='new-username'
+                        name='new-username'
+                        placeholder='New Username'
+                        onChange={e => setNewUsername(e.target.value)}
+                        ref={newUsernameVal}
+                      />
+                    </div>
+
+                    <button type='submit'>Save</button>
+                  </div>
+                  {usernameUpdatedError ? (
+                    <p
+                      className={`${
+                        usernameUpdatedError.error
+                          ? 'error-message'
+                          : 'success-message'
+                      }`}
+                    >
+                      {usernameUpdatedError.error
+                        ? usernameUpdatedError.error
+                        : usernameUpdatedError.success}
+                    </p>
+                  ) : (
+                    ''
+                  )}
+                </form>
+
+                <form
+                  className='update-auth-form'
+                  onSubmit={e => updatePassword(e)}
+                >
+                  <h3>Change Password</h3>
+                  <div className='update-input-fields'>
+                    <div className='input-field'>
+                      <input
+                        style={
+                          updatePasswdError.error
+                            ? { borderColor: 'rgba(255, 0, 0, 0.753)' }
+                            : {}
+                        }
+                        type='password'
+                        id='updated-password'
+                        name='updated-password'
+                        placeholder='New password'
+                        ref={newPasswdVal}
+                        onChange={e => setNewPassword(e.target.value)}
+                      />
+                    </div>
+
+                    <button type='submit'>Save</button>
+                  </div>
+                  {updatePasswdError ? (
+                    <p
+                      className={`${
+                        updatePasswdError.error
+                          ? 'error-message'
+                          : 'success-message'
+                      }`}
+                    >
+                      {updatePasswdError.error
+                        ? updatePasswdError.error
+                        : updatePasswdError.success}
+                    </p>
+                  ) : (
+                    <></>
+                  )}
+                </form>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

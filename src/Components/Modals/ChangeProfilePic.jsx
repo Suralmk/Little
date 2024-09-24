@@ -1,33 +1,54 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { PiXLight, PiUploadBold, PiUploadFill } from 'react-icons/pi'
-import api from '../../Config/config'
+import { api } from '../../Core/config'
+import useGlobal from '../../Core/global'
+import { spinner } from '../../assets'
 const ChangeProfilePic = ({
   open,
   closeChnageProfilePic,
   profile_pic,
-  username,
-  forceUpdatePro
+  forceUpdateProfile
 }) => {
   const [newProfilePic, setNewProfilePic] = useState()
   const [image, setImage] = useState()
+  const user = useGlobal(state => state.user)
+  const init = useGlobal(state => state.init)
+  const updateProfile = useGlobal(state => state.updateProfile)
+  const token = JSON.parse(localStorage.getItem('tokens'))
+  const [loading, setLoading] = useState(false)
+  const btnref = useRef()
 
   const updateProfilePic = async e => {
     e.preventDefault()
     const formData = new FormData()
     formData.append('profile_pic', newProfilePic)
-
+    setLoading(true)
+    btnref.current.disabled = true
     try {
-      const response = await api.put(`${username}/update/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await api.put(
+        `${user.profile.user.username}/update/`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token.access}`
+          }
         }
+      )
+
+      forceUpdateProfile()
+      updateProfile({
+        ...user.profile,
+        profile_pic: response.data.profile_pic
       })
-      forceUpdatePro()
-      console.log(response.data)
     } catch (err) {
-      console.log(err.message)
+      console.log(err)
     }
+
+    setLoading(false)
+    btnref.current.disabled = false
   }
+
   return (
     <div className={`modal ${open ? 'modal-open' : ''}`}>
       <div className='change-profile-pic-modal'>
@@ -78,7 +99,27 @@ const ChangeProfilePic = ({
                 hidden
               />
             </div>
-            <button>Save</button>
+            <button
+              ref={btnref}
+              type='submit'
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 15,
+                justifyContent: 'center'
+              }}
+              className={loading ? 'disable-btn' : ''}
+            >
+              {' '}
+              Save{' '}
+              {loading ? (
+                <>
+                  <img src={spinner} alt='' />
+                </>
+              ) : (
+                ''
+              )}
+            </button>
           </form>
         </div>
       </div>

@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { PiXLight, PiThumbsUp, PiThumbsUpFill } from 'react-icons/pi'
+import { PiXLight } from 'react-icons/pi'
 import './modals.css'
 
 const Comments = ({ open, closeShowCommentsModal, comments }) => {
-  const [commentlike, setCommentLike] = useState(false)
   return (
     <div className={`modal ${open ? 'modal-open' : ''}`}>
       <div className='show-comments-modal'>
@@ -27,24 +26,6 @@ const Comments = ({ open, closeShowCommentsModal, comments }) => {
                 </p>
                 <div className='comment-timestamp'>
                   {new Date(comment.timestamp).toLocaleTimeString()}
-                </div>
-                <div className='comment-likes'>
-                  {commentlike ? (
-                    <PiThumbsUpFill
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setCommentLike(!commentlike)
-                      }}
-                    />
-                  ) : (
-                    <PiThumbsUp
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => {
-                        setCommentLike(!commentlike)
-                      }}
-                    />
-                  )}{' '}
-                  <p className='comment-like-number'>{comment.likes}</p>
                 </div>
               </div>
             ))

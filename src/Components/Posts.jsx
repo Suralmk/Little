@@ -1,25 +1,25 @@
 import React, { useEffect, useState, useReducer, useRef } from 'react'
-import { FaRegComment, FaShare, FaEllipsisH } from 'react-icons/fa'
+import './style.css'
+import './Modals/modals.css'
+import { FaRegComment } from 'react-icons/fa'
 import { PiPaperPlaneRight } from 'react-icons/pi'
 import { BiHeart } from 'react-icons/bi'
 import { ImHeart } from 'react-icons/im'
 import { Link } from 'react-router-dom'
-import './style.css'
-import './Modals/modals.css'
 import Comments from './Modals/Comments'
 import { api } from '../Core/config'
 import useGlobal from '../Core/global'
 
-const Post = ({ post, tags, forceUpdatePro }) => {
+const Post = ({ post }) => {
   const commentinput = useRef()
   const [like, setLike] = useState(false)
   const [ignored, forceUpdate] = useReducer(x => x + 1, 0)
   const [ignoredComment, forceUpdateComment] = useReducer(x => x + 1, 0)
   const [showCommentsModal, setshowCommentsModal] = useState(false)
-
-  const setLoading = useGlobal(state => state.setLoading)
-  const authenticated = useGlobal(state => state.authenticated)
+  const [totalComment, setTotalComment] = useState(post?.total_comments)
   const addToast = useGlobal(state => state.addToast)
+  const user = useGlobal(state => state.user.profile.user)
+  const token = JSON.parse(localStorage.getItem('tokens'))
 
   const [postComments, setPostComments] = useState([])
   const getPostComments = async url => {
@@ -30,39 +30,51 @@ const Post = ({ post, tags, forceUpdatePro }) => {
       console.log(err.message)
     }
   }
+
   const [likeData, setLikeData] = useState([])
   useEffect(() => {
     getLikes()
-    //getPostComments()
   }, [ignored])
-
-  useEffect(() => {
-    //getPostComments()
-  }, [ignoredComment])
 
   const getLikes = async () => {
     const response = await api.get(`posts/${post.id}/like/`)
-    var current_user = localStorage.getItem('username')
     const likeData = response.data
     setLikeData(likeData)
-    for (var i = 0; i < likeData.length; i++) {
-      if (current_user === likeData[i].username) {
-        setLike(true)
-      }
-    }
+
+    // Check if the current user has liked the post
+    const likedByCurrentUser = likeData.some(
+      like => like.username === user.username
+    )
+    setLike(likedByCurrentUser)
   }
 
   const handleLike = async id => {
-    await api.post(`posts/${id}/like/`)
+    await api.post(
+      `posts/${id}/like/`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.access}`
+        }
+      }
+    )
+    setLike(true)
     forceUpdate()
   }
 
   const handleUnlike = async id => {
-    await api.delete(`posts/${id}/like/`)
+    await api.delete(`posts/${id}/like/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token.access}`
+      }
+    })
+    setLike(false)
     forceUpdate()
   }
 
-  const [comment, setComment] = useState()
+  const [comment, setComment] = useState('')
   const [commentError, setCommentError] = useState('')
   const SubmitComment = async (e, post_id) => {
     e.preventDefault()
@@ -71,12 +83,22 @@ const Post = ({ post, tags, forceUpdatePro }) => {
       return
     } else {
       try {
-        const response = await api.post(`posts/${post_id}/comments/create/`, {
-          comment: comment
-        })
+        await api.post(
+          `posts/${post_id}/comments/create/`,
+          {
+            comment: comment
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token.access}`
+            }
+          }
+        )
         commentinput.current.value = ''
         setComment('')
         forceUpdateComment()
+        setTotalComment(totalComment + 1)
       } catch (err) {
         console.log(err.message)
       }
@@ -86,15 +108,14 @@ const Post = ({ post, tags, forceUpdatePro }) => {
   const validateComment = () => {
     const failComment = !comment
     if (failComment) {
-      setCommentError('Comment is empty')
+      setCommentError('Write something first!')
     } else {
       setCommentError('')
     }
 
-    if (failComment) {
-      return false
-    }
+    return !failComment
   }
+
   return (
     <React.Fragment>
       <div className='posts'>
@@ -120,7 +141,7 @@ const Post = ({ post, tags, forceUpdatePro }) => {
           {/* <FaEllipsisH /> */}
         </div>
         <div className='post-content'>
-          <h2> {post.title}</h2>
+          <h2>{post.title}</h2>
           <p>{post.caption}</p>
           <div className='blog-image'>
             <img src={post.picture} alt='' />
@@ -133,7 +154,6 @@ const Post = ({ post, tags, forceUpdatePro }) => {
                   color='rgba(35, 11, 143, 0.318)'
                   size={20}
                   onClick={() => {
-                    setLike(!like)
                     handleUnlike(post.id)
                   }}
                 />
@@ -142,17 +162,13 @@ const Post = ({ post, tags, forceUpdatePro }) => {
                   className='like'
                   size={20}
                   onClick={() => {
-                    setLike(!like)
                     handleLike(post.id)
                   }}
                 />
-              )}{' '}
-              <p id='like-number'>{likeData.length}</p>
+              )}
+              <p id='like-number'>{likeData.length} Likes</p>
             </div>
-            <div className='shares'>
-              <FaShare size={20} className='share' />{' '}
-              <p id='shares-value'>{post.shares}</p>
-            </div>
+
             <div className='shares'>
               <FaRegComment
                 size={20}
@@ -161,8 +177,8 @@ const Post = ({ post, tags, forceUpdatePro }) => {
                   setshowCommentsModal(!showCommentsModal)
                   getPostComments(post.comment_url)
                 }}
-              />{' '}
-              <p id='shares-value'>{postComments.length}</p>
+              />
+              <p id='shares-value'>{totalComment} Comments</p>
             </div>
           </div>
           <div

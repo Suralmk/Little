@@ -1,23 +1,37 @@
-import React, { useEffect, useReducer, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useReducer, useState, useRef } from 'react'
 import MyPost from '../Components/MyPost'
-import api from '../Config/config'
-import { Link } from 'react-router-dom'
+import { api } from '../Core/config'
+import useGlobal from '../Core/global'
+
 const Activity = () => {
-  const username = localStorage.getItem('username')
-  const [postmenu, setPostMneu] = useState(true)
   const [myPost, setMyPost] = useState([])
   const [updatePost, forceUpdate] = useReducer(x => x + 1, 0)
   const [followings, setFollowings] = useState([])
+  const token = JSON.parse(localStorage.getItem('tokens'))
+  const user = useGlobal(state => state.user)
 
   const fetchMyPosts = async () => {
-    const response = await api.get(`posts/user/`)
+    const response = await api.get(`posts/user/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token.access}`
+      }
+    })
     setMyPost(response.data)
   }
+
   const fetchMyFollowings = async () => {
     try {
-      var response = await api.get(`${username.toLowerCase()}/follow/`)
-      setFollowings(response.data.following)
+      var response = await api.get(
+        `${user.ptofile.user.username.toLowerCase()}/follow/`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.access}`
+          }
+        }
+      )
+      setFollowings(response.data?.following)
     } catch (err) {
       console.log(err.message)
     }
@@ -25,9 +39,11 @@ const Activity = () => {
 
   useEffect(() => {
     fetchMyPosts()
-    fetchMyFollowings()
+    // fetchMyFollowings()
   }, [updatePost])
-  const showPostMneu = () => {}
+
+
+
 
   return (
     <React.Fragment>

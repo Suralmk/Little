@@ -30,7 +30,6 @@
     box-shadow: var(--box-shadow2);
     top: 15%;
     left: 38.5%;
-
     animation: fadeDown ease 0.8s;
     width: max-content;
     font-weight: bold;
@@ -118,6 +117,12 @@
     align-items: end;
     margin-left: auto;
 }
+@media screen and (max-width: 600px) {
+.close-modal {
+    margin-right: 15px;
+    margin-top: 15px;
+    }  
+}
 
 
 /*======================
@@ -187,12 +192,14 @@
 }
 @media screen and (max-width: 600px) {
     .show-comments-modal {
-        min-width: 300px;
-        max-width: 350px;
-        padding: 20px 10px;
+        min-width: 100%;
+        padding: 0;
+        min-height: 100vh;
+        margin-top: 0;
+        border-radius: 0px;
     }
     .comments-container{
-        height: 50vh;
+        height: 100%;
         padding: 10px;
     }
 }
@@ -202,7 +209,8 @@
 ==================*/
 
 .show-follower-modal {
-    width: 450px;
+    min-height: 400px;
+    width: 400px;
     background: white;
     padding: 25px 20px;
     border-radius: 15px;
@@ -215,36 +223,34 @@
     height: 75vh;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
     margin-top: 20px;
     overflow-y: scroll;
     scroll-behavior: smooth;
     height: 100%;
     padding: 15px  ;
-
 }
 .follower-section {
-    padding: 10px 8px;
-    background: rgba(218, 214, 214, 0.425);
+    padding:  8px;
+    background: rgb(241, 246, 248);
     border-radius: 10px;
     display: flex;
     gap: 30px;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--box-shadow2);
+    box-shadow: var(--box-shadow3);
 }
 .follower-profile-image {
-    width:80px;
-    height: 80px;
+    width:70px;
+    height: 70px;
     border-radius: 50%;
-    background: black;
+    background: rgb(253, 253, 253);
 }
 .follower-profile-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-
 }
 .follower-profile-content {
     display: flex;
@@ -272,12 +278,14 @@
 }
 @media screen and (max-width: 600px) {
     .show-follower-modal {
-        min-width: 300px;
-        max-width: 350px;
-        padding: 20px 10px;
+        min-width: 100%;
+        padding: 0;
+        min-height: 100vh;
+        margin-top: 0;
+        border-radius: 0px;
     }
     .follower-container{
-        height: 50vh;
+        height: 100%;
         padding: 10px;
     }
 }
@@ -289,7 +297,7 @@
 
 .show-following-modal {
 
-    width: 450px;
+    width: 400px;
     background: white;
     padding: 25px 20px;
     border-radius: 15px;
@@ -302,9 +310,11 @@
 
 @media screen and (max-width: 600px) {
     .show-following-modal {
-        min-width: 300px;
-        max-width: 350px;
-        padding: 20px 10px;
+        min-width: 100%;
+        padding: 0;
+        min-height: 100vh;
+        margin-top: 0;
+        border-radius: 0px;
     }
 }
 /*===============================
@@ -330,8 +340,12 @@
 }
 .change-profile-pic-container form button{
     margin-top: 10px;
+    width: max-content;
 }
-
+.change-profile-pic-container form button img{
+   width: 20px;
+   height: 20px;
+}
 .current-profile-pic {
     display: flex;
     padding: 5px 0;
@@ -341,8 +355,6 @@
     background: rgba(0, 0, 0, 0.082);
     position: relative;
 }
-
-
 .current-profile-pic img{
     width: 200px;
     height: 200px;
@@ -360,9 +372,10 @@
 }
 @media screen and (max-width: 600px) {
     .change-profile-pic-modal {
-        min-width: 300px;
-        max-width: 350px;
-        padding: 20px 10px;
+        min-width: 270px;
+        max-width: 300px;
+        padding: 15px 10px;
+       
     }
     .follower-container{
         height: 50vh;
@@ -388,4 +401,65 @@
     width: 100px;
     height: 100px;
     border-radius: 10px;
+}
+
+
+.disable-btn {
+    cursor:not-allowed;
+}
+
+/*===============================
+    Search Result 
+===============================*/
+
+.search-result {
+    position: fixed;
+    z-index: 2;
+    right: 20px;
+    display: none;
+    background: rgba(255, 255, 255, 0.949);
+    box-shadow: var(--box-shadow);
+    padding: 10px 15px;
+}
+.show-search-result{
+display: block;
+}
+.close-search-modal {
+    position: absolute;
+    right: 20px;
+    z-index: 5;
+}
+.search-spinner {
+    margin-top: 50px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.search-result-container {
+    width: 350px;
+    min-height: 450px;
+    height: auto;
+    backdrop-filter: blur(3px);
+    margin-top: 30px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.5s;
+}
+
+@media screen and (max-width: 600px) {
+    .search-result {
+        min-width: 100%;
+        padding: 0;
+        min-height: 100vh;
+        margin-top: 0;
+        border-radius: 0px;
+        right: 0;
+    }
+    .search-result-container {
+        height: 100%;
+        padding: 10px;
+    }
 }

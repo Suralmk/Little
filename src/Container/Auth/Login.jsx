@@ -1,12 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../style.css'
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { api, googleapi } from '../../Core/config'
+import { Link, useNavigate } from 'react-router-dom'
+import { api } from '../../Core/config'
 import useGlobal from '../../Core/global'
-const Login = ({}) => {
+
+const Login = () => {
   const login = useGlobal(state => state.login)
   const addToast = useGlobal(state => state.addToast)
   const setLoading = useGlobal(state => state.setLoading)
@@ -17,7 +16,7 @@ const Login = ({}) => {
     password: ''
   })
   const [passwordError, setPasswordError] = useState('')
-  const [emailError, setEmaiError] = useState('')
+  const [emailError, setEmailError] = useState('')
 
   const handleChange = e => {
     setUserInfo({
@@ -29,42 +28,38 @@ const Login = ({}) => {
   const handleLogin = async event => {
     event.preventDefault()
 
-    if (validateLogin() === false) {
+    if (!validateLogin()) {
       return
-    } else {
-      setLoading(true)
-      try {
-        const res = await api
-          .post('login/', userInfo, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(res => {
-            if (res.status === 200) {
-              login(res.data)
-              navigate('/')
-              addToast('Succesfully Logged In!', 'success')
-            }
-          })
-      } catch (err) {
-        console.log(err)
-        if (err.response) {
-          addToast(`${err.response.data.detail}`, 'failure')
-        } else {
-          addToast(`There is a ${err.message}!`, 'failure')
-        }
-      }
-      setLoading(false)
     }
+
+    setLoading(true)
+    try {
+      const res = await api.post('login/', userInfo, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (res.status === 200) {
+        login(res.data)
+        navigate('/')
+      }
+    } catch (err) {
+      if (err.response) {
+        addToast(`${err.response.data.detail}`, 'failure')
+      } else {
+        addToast(`There is a ${err.message}!`, 'failure')
+      }
+    }
+    setLoading(false)
   }
 
   const validateLogin = () => {
     const failEmail = !userInfo.email || userInfo.email.length === 0
     if (failEmail) {
-      setEmaiError('Email is required!')
+      setEmailError('Email is required!')
     } else {
-      setEmaiError('')
+      setEmailError('')
     }
 
     const failPassword = !userInfo.password || userInfo.password.length < 2
@@ -74,36 +69,37 @@ const Login = ({}) => {
       setPasswordError('')
     }
 
-    if (failPassword || failEmail) {
-      return false
-    }
+    return !(failPassword || failEmail)
   }
 
   const handleGoogle = async response => {
     setLoading(true)
-    await googleapi
-      .post('/auth/convert-token/', {
-        access_token: response.tokenId
+    const { credential } = response
+
+    try {
+      const res = await api.post('google-login/', {
+        code: credential
       })
-      .then(res => {
-        console.log(res.data)
-        login(res.data)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+
+      login(res.data)
+      navigate('/')
+    } catch (err) {
+      addToast(`Google login failed: ${err.message}`, 'failure')
+    }
+
     setLoading(false)
   }
 
   const handleLoginFailure = () => {
-    console.error('Login Failed')
+    addToast('Google Login Failed', 'failure')
   }
+
   return (
     <div className='auth-form d_flex'>
       <div className='auth-form-container'>
         <form>
           <h1>Log In</h1>
-          <div className='input-field '>
+          <div className='input-field'>
             <label htmlFor='email'>Email</label>
             <input
               style={
@@ -112,13 +108,12 @@ const Login = ({}) => {
               type='email'
               name='email'
               placeholder='Enter email'
-              onChange={event => {
-                handleChange(event)
-              }}
+              onChange={handleChange}
+              value={userInfo.email}
             />
-            {emailError ? <p className='error-message'>{emailError}</p> : ''}
+            {emailError && <p className='error-message'>{emailError}</p>}
           </div>
-          <div className='input-field '>
+          <div className='input-field'>
             <label htmlFor='password'>Password</label>
             <input
               style={
@@ -127,15 +122,10 @@ const Login = ({}) => {
               type='password'
               name='password'
               placeholder='Enter password'
-              onChange={event => {
-                handleChange(event)
-              }}
+              onChange={handleChange}
+              value={userInfo.password}
             />
-            {passwordError ? (
-              <p className='error-message'>{passwordError}</p>
-            ) : (
-              ''
-            )}
+            {passwordError && <p className='error-message'>{passwordError}</p>}
           </div>
           <p>
             <Link to='/reset-password' style={{ color: 'rgb(5, 5, 143)' }}>
@@ -144,22 +134,29 @@ const Login = ({}) => {
           </p>
           <button
             type='submit'
-            onClick={event => {
-              handleLogin(event)
-            }}
+            onClick={handleLogin}
+            disabled={
+              !userInfo.email ||
+              !userInfo.password ||
+              passwordError ||
+              emailError
+            }
           >
             Log In
           </button>
           <div className='or-container'>
             <span className='or-text'>or</span>
           </div>
-          <GoogleOAuthProvider clientId='YOUR_GOOGLE_CLIENT_ID'>
-            <GoogleLogin
-              onSuccess={handleGoogle}
-              onError={handleLoginFailure}
-            />
-          </GoogleOAuthProvider>
-
+          <div>
+            <GoogleOAuthProvider clientId='788776495482-jgidauvaegmcslr5rif3u7l38ttc7q1b.apps.googleusercontent.com'>
+              <GoogleLogin
+                width={'350'}
+                onSuccess={handleGoogle}
+                onError={handleLoginFailure}
+                flow='auth-code'
+              />
+            </GoogleOAuthProvider>
+          </div>
           <p>
             Doesn't have an account?{' '}
             <Link to='/register' style={{ color: 'rgb(5, 5, 143)' }}>
@@ -169,7 +166,7 @@ const Login = ({}) => {
           <p style={{ fontSize: 12 }}>
             Email:{' '}
             <span style={{ color: 'rgba(14, 14, 83, 0.589)' }}>
-              su@gmail.com
+              little@example.com
             </span>{' '}
             <br />
             Password:{' '}

@@ -1,17 +1,88 @@
 import React from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
-const SubProfile = ({ profile_pic, Profile_name, profile_bio }) => {
+import { api } from '../Core/config'
+import useGlobal from '../Core/global'
+const SubProfile = ({ suggestion, forceUpdateProfile }) => {
+  const token = JSON.parse(localStorage.getItem('tokens'))
+  const [follow, setFollow] = React.useState(false)
+  const user = useGlobal(state => state.user)
+  const followUser = async username => {
+    try {
+      await api.post(
+        `/${user.profile.user.username.toLowerCase()}/follow-status/`,
+        {
+          follow: username
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.access}`
+          }
+        }
+      )
+      forceUpdateProfile()
+    } catch (err) {
+      console.log(err.message)
+    }
+  }
+
+  const unfollowUser = async username => {
+    try {
+      await api.put(
+        `/${user.profile.user.username.toLowerCase()}/follow-status/`,
+        {
+          follow: username
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.access}`
+          }
+        }
+      )
+      forceUpdateProfile()
+    } catch (err) {
+      console.log(err.message)
+    }
+  }
   return (
     <div className='sugg-people-profile'>
       <div className='sugg-people-pro '>
         <div className='sugg-profile-pic'>
-          <img src={profile_pic} alt='' />
+          <img src={suggestion.profile_pic} alt='' />
         </div>
         <div className='sug-profile-info'>
-          <p>{Profile_name}</p>
-          <p className='profile-bio-text'>{profile_bio}</p>
-          <Link style={{ color: '  rgb(5, 5, 143)' }}>Follow</Link>
+          <p>{suggestion.full_name}</p>
+          <p className='profile-bio-text'>{suggestion?.bio}</p>
+
+          <React.Fragment>
+            {follow ? (
+              <Link
+                style={{
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  unfollowUser(suggestion.username)
+                  setFollow(!follow)
+                }}
+              >
+                UnFollow
+              </Link>
+            ) : (
+              <Link
+                style={{
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  followUser(suggestion.username)
+                  setFollow(!follow)
+                }}
+              >
+                Follow
+              </Link>
+            )}
+          </React.Fragment>
         </div>
       </div>
     </div>

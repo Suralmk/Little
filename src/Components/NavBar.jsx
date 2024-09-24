@@ -1,240 +1,272 @@
-import React, { useRef, useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import './style.css'
 import { Link } from 'react-router-dom'
-import { NavLink, useNavigate } from 'react-router-dom'
-import api from '../Config/config'
-import { PiXLight, PiMagnifyingGlassLight, PiListBold } from 'react-icons/pi'
-import {
-  FaCaretDown,
-  FaCaretUp,
-  FaHome,
-  FaPlus,
-  FaComment
-} from 'react-icons/fa'
-import { CiChat1 } from 'react-icons/ci'
-
-import SearchResult from '../Container/SearchResult'
+import { NavLink } from 'react-router-dom'
+import { api } from '../Core/config'
+import { PiMagnifyingGlassLight } from 'react-icons/pi'
+import { PiPlusBold, PiHouseBold } from 'react-icons/pi'
+import SearchResult from './Modals/SearchResult'
 import useGlobal from '../Core/global'
-const NavBar = ({ isAuthenticated }) => {
-  const navigate = useNavigate()
+const NavBar = () => {
   const searchedVal = useRef()
   const [profilearrow, setProFileArrow] = useState(false)
-  const [mobileMenu, setMobileMenu] = useState(false)
   const [me, setMe] = useState(false)
-  const logout = useGlobal(state => state.logout)
+  const { logout, user } = useGlobal()
+
+  const [mobileSearch, setMobileSearch] = useState(false)
   const handleLogout = () => {
     logout()
     setMe(!me)
   }
 
   const [searchedText, setSearchedText] = useState('')
-  const [searchedResult, setSearchedResult] = useState()
+  const [showSearchResult, setShowSearchResult] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [searchResult, setSearchResult] = useState([])
 
-  const performSerach = async e => {
-    e.preventDefault()
-
-    // try {
-    //   const response = await api.get(`/users/?search=${searchedText}`)
-    //   setSearchedResult(response.data)
-    //   setMobileMenu(false)
-    //   searchedVal.current.value = ''
-    //   console.log(searchedResult)
-    //   //navigate(`/search`, { state: searchedResult })
-    // } catch (err) {
-    //   console.log(err.response.data.error)
-
-    //   setSearchError({ error: `No results for ${searchedText}` })
-    // }
+  const performSerach = async text => {
+    setShowSearchResult(true)
+    setLoading(true)
+    try {
+      const response = await api.get(`/users/search/?search=${text}`)
+      setSearchResult(response.data)
+    } catch (err) {
+      console.log(err)
+      setSearchedText('')
+    }
+    setLoading(false)
   }
 
+  const meRef = useRef()
+
+  useEffect(() => {
+    const handleOutsideClick = event => {
+      // Close modal if click is outside of menuRef
+      if (meRef.current && !meRef.current.contains(event.target)) {
+        setMe(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [])
   return (
-    <div className='nav ' id='nav'>
-      <Link
-        to='/'
-        style={{
-          marginLeft: '10px'
-        }}
-      >
-        <h1
+    <React.Fragment>
+      <div className='nav ' id='nav'>
+        <Link
+          to='/'
           style={{
-            fontSize: '40px'
+            marginLeft: '10px'
           }}
         >
-          {' '}
-          little
-        </h1>
-      </Link>
-      <ul className='d_flex moniter-menu'>
-        <li className='fd_flex'>
-          <NavLink
-            to='/'
-            className='fd_flex'
-            style={({ isActive }) => {
-              return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
-            }}
-          >
-            {' '}
-            <h4>
-              <FaHome />
-            </h4>
-            <h4> Home</h4>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to='/post'
-            className='fd_flex'
-            style={({ isActive }) => {
-              return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
-            }}
-          >
-            <h4>
-              <FaPlus />
-            </h4>
-            <h4>Post</h4>
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to='/sd'
-            className='fd_flex'
-            style={({ isActive }) => {
-              return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
-            }}
-          >
-            <h4>
-              <CiChat1  />
-            </h4>
-            <h4>Message</h4>
-          </NavLink>
-        </li>
+          <h1 className='web-logo'>little</h1>
+        </Link>
+        <ul className='d_flex moniter-menu'>
+          <li className='fd_flex'>
+            <NavLink
+              to='/'
+              className='fd_flex'
+              style={({ isActive }) => {
+                return isActive ? { color: 'rgba(35, 11, 143, 0.5)' } : {}
+              }}
+            >
+              {' '}
+              <h4>
+                <PiHouseBold size={20} />
+              </h4>
+              <h4> Home</h4>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to='/post'
+              className='fd_flex'
+              style={({ isActive }) => {
+                return isActive ? { color: 'rgba(35, 11, 143, 0.5)' } : {}
+              }}
+            >
+              <h4>
+                <PiPlusBold size={20} />
+              </h4>
+              <h4>Post</h4>
+            </NavLink>
+          </li>
+          {/* <li>
+            <NavLink
+              to='/message'
+              className='fd_flex'
+              style={({ isActive }) => {
+                return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
+              }}
+            >
+              <h4>
+                <PiChatBold size={20} />
+              </h4>
+              <h4>Message</h4>
+            </NavLink>
+          </li> */}
 
-        <li className='me'>
-          <NavLink
-            onClick={() => {
-              setProFileArrow(!profilearrow)
-              setMe(!me)
-            }}
-          >
-            <h4>
-              <FaHome />
-            </h4>
-            Me
-            {profilearrow ? (
-              <React.Fragment>
-                <FaCaretUp />{' '}
-              </React.Fragment>
-            ) : (
-              <FaCaretDown />
-            )}
-          </NavLink>
-          <ul className={me ? `show-me-menu me-menu` : 'me-menu'}>
-            <li>
-              <Link onClick={() => setMe(!me)}>Profile</Link>
-            </li>
-            <li>
-              <Link onClick={() => handleLogout()}>Log Out</Link>
-            </li>
-          </ul>
-        </li>
-
-        <li className='search-list'>
-          <form onSubmit={e => performSerach(e)}>
-            <div className='input-field'>
-              <input
-                type='text'
-                onChange={e => setSearchedText(e.target.value)}
-                ref={searchedVal}
-                name='searchd'
-                placeholder='Search'
+          <li className='me'>
+            <NavLink
+              onClick={() => {
+                setProFileArrow(!profilearrow)
+                setMe(!me)
+              }}
+            >
+              <img
+                src={user.profile.profile_pic || ''}
+                width={40}
+                height={40}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
-              <PiMagnifyingGlassLight size={21} className='search-icon' />
-            </div>
-            <button type='submit' hidden className='search-btn'>
-              Search
-            </button>
-          </form>
-        </li>
-      </ul>
-
-      <PiListBold
-        size={30}
-        className='mobile-menu-btn'
-        onClick={() => setMobileMenu(!mobileMenu)}
-      />
-      {mobileMenu && (
-        <>
-          <ul className='d_flex mobile-menu'>
-            <PiXLight
-              size={30}
-              className='mobile-menu-btn-close'
-              onClick={() => setMobileMenu(!mobileMenu)}
-            />
-            <li>
-              <NavLink
-                to='/'
-                className='d_flex'
-                style={({ isActive }) => {
-                  return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
-                }}
-              >
-                {' '}
-                <h4>
-                  <FaHome />
-                </h4>
-                <h4> Home</h4>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to='/post'
-                className='d_flex'
-                style={({ isActive }) => {
-                  return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
-                }}
-              >
-                <h4>
-                  <FaPlus />
-                </h4>
-                <h4>Post</h4>
-              </NavLink>
-            </li>
-
-            {isAuthenticated ? (
-              <li>
-                <NavLink to='/'>Logout</NavLink>
+            </NavLink>
+            <ul ref={meRef} className={me ? `show-me-menu me-menu` : 'me-menu'}>
+              <li style={{ width: '100%', display: 'flex' }}>
+                <Link
+                  style={{ width: '100%' }}
+                  onClick={() => {
+                    setMe(!me)
+                  }}
+                >
+                  Profile
+                </Link>
               </li>
-            ) : (
-              <React.Fragment>
-                <li>
-                  <Link to='/login'>Login</Link>
-                </li>
-                <li>
-                  <Link to='/register'>Sign Up</Link>
-                </li>
-              </React.Fragment>
-            )}
-            <li className='search-list'>
-              <form onSubmit={e => performSerach(e)}>
-                <div className='input-field'>
-                  <input
-                    type='text'
-                    name='searched'
-                    onChange={e => setSearchedText(e.target.value)}
-                    ref={searchedVal}
-                    placeholder='Search'
+              <li style={{ width: '100%', display: 'flex' }}>
+                <Link style={{ width: '100%' }} onClick={() => handleLogout()}>
+                  Log Out
+                </Link>
+              </li>
+            </ul>
+          </li>
+
+          <li className='search-list'>
+            <form>
+              <div className='input-field'>
+                <input
+                  type='text'
+                  onChange={e => {
+                    if (e.target.value === '' || e.target.value === null) {
+                      setShowSearchResult(false)
+                    } else {
+                      setSearchedText(e.target.value)
+                      performSerach(e.target.value)
+                    }
+                  }}
+                  ref={searchedVal}
+                  name='searchd'
+                  placeholder='Search'
+                />
+              </div>
+              <button type='submit' hidden className='search-btn'>
+                Search
+              </button>
+            </form>
+          </li>
+        </ul>
+
+        {
+          <>
+            <ul className='d_flex mobile-menu'>
+              <li>
+                <NavLink
+                  to='/'
+                  className='d_flex'
+                  style={({ isActive }) => {
+                    return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
+                  }}
+                >
+                  <h4>
+                    <PiHouseBold size={20} />
+                  </h4>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to='/post'
+                  className='d_flex'
+                  style={({ isActive }) => {
+                    return isActive ? { color: 'rgba(35, 11, 143, 0.318)' } : {}
+                  }}
+                >
+                  <h4>
+                    <PiPlusBold size={20} />
+                  </h4>
+                </NavLink>
+              </li>
+
+              <li className='search-list'>
+                <form>
+                  <div className='input-field'>
+                    <input
+                      className={`${mobileSearch ? 'search-input-show' : ''}`}
+                      type='text'
+                      name='searched'
+                      onChange={e => {
+                        if (e.target.value === '' || e.target.value === null) {
+                          setShowSearchResult(false)
+                        } else {
+                          setSearchedText(e.target.value)
+
+                          performSerach(e.target.value)
+                        }
+                      }}
+                      ref={searchedVal}
+                      placeholder='Search'
+                    />
+                    <PiMagnifyingGlassLight
+                      size={21}
+                      className='search-icon'
+                      onClick={() => {
+                        setMobileSearch(!mobileSearch)
+                      }}
+                    />
+                  </div>
+                  <button type='submit' hidden className='search-btn'></button>
+                </form>
+              </li>
+              <li className='me'>
+                <NavLink
+                  onClick={() => {
+                    setProFileArrow(!profilearrow)
+                    setMe(!me)
+                  }}
+                >
+                  <img
+                    src={user.profile.profile_pic}
+                    width={25}
+                    height={25}
+                    style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />
-                  <PiMagnifyingGlassLight size={21} className='search-icon' />
-                </div>
-                <button type='submit' hidden className='search-btn'>
-                  Search
-                </button>
-              </form>
-            </li>
-          </ul>
-        </>
-      )}
-    </div>
+                </NavLink>
+                <ul className={me ? `show-me-menu me-menu` : 'me-menu'}>
+                  <li>
+                    <Link
+                      onClick={() => {
+                        setMe(!me)
+                      }}
+                    >
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link onClick={() => handleLogout()}>Log Out</Link>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </>
+        }
+      </div>
+      <SearchResult
+        open={showSearchResult}
+        loading={loading}
+        searchResult={searchResult}
+        setShowSearchResult={setShowSearchResult}
+      />
+    </React.Fragment>
   )
 }
 

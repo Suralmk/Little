@@ -4,7 +4,7 @@ import { FaMailchimp } from 'react-icons/fa'
 import { CiMail } from 'react-icons/ci'
 import Button from '../../Components/Button'
 
-const ResetEmailSend = ({ setIsAuthenticated, HomeUpdate }) => {
+const ResetEmailSend = () => {
   return (
     <div className='auth-form  d_flex'>
       <div className='auth-form-container'>

@@ -14,12 +14,7 @@ const useGlobal = create(set => ({
       loading: val
     }))
   },
-  postLoading: false,
-  setPostLoading: val => {
-    set(state => ({
-      postLoading: val
-    }))
-  },
+
   //Toast
   toasts: [],
   addToast: (message, type = 'info') => {
@@ -42,24 +37,20 @@ const useGlobal = create(set => ({
     : null,
   init: async () => {
     const tokens = localStorage.getItem('tokens')
+
     if (tokens) {
       try {
         const res = await api.post('/token/refresh/', {
           refresh: JSON.parse(tokens).refresh
         })
-        console.log(res)
-        let data = {
-          access: res.data.access,
-          refresh: JSON.parse(tokens).refresh
-        }
-        localStorage.setItem('tokens', JSON.stringify(data))
-
+        localStorage.setItem('tokens', JSON.stringify(res.data))
         set(state => ({
           authenticated: true,
-          user: jwtDecode(res.data.access)
+          user: jwtDecode(res.data.access),
+          tokens: res.data
         }))
       } catch (err) {
-        console.log(err.message)
+        console.log(err)
       }
     }
   },
@@ -68,7 +59,8 @@ const useGlobal = create(set => ({
     localStorage.setItem('tokens', JSON.stringify(data))
     set(state => ({
       authenticated: true,
-      user: jwtDecode(data.access)
+      user: jwtDecode(data.access),
+      tokens: data
     }))
   },
 
@@ -78,6 +70,34 @@ const useGlobal = create(set => ({
       authenticated: false,
       user: null
     }))
+  },
+  updateProfile: updatedProfile => {
+    set(state => ({
+      user: {
+        ...state.user,
+        profile: {
+          ...state.user.profile,
+          ...updatedProfile
+        }
+      }
+    }))
+  },
+
+  //Check Connection
+  // get Current Profile
+
+  fetchProfile: async (username, token_access) => {
+    try {
+      const res = await api.get(`/${username}/`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token_access}`
+        }
+      })
+      return res.data
+    } catch (err) {
+      console.log(err.response.data)
+    }
   }
 }))
 

@@ -10,60 +10,99 @@ import { api } from '../Core/config'
 import useGlobal from '../Core/global'
 import { useState, useEffect, useReducer } from 'react'
 import SkeletonPostsLoading from '../Components/SkeletonLoaderPosts'
+import ProfileSkeleton from '../Components/Skeletons/ProfileSkeleton'
 
-const Home = ({ ignored }) => {
-  const [posts, setPosts] = useState([])
-  const [updateProfile, forceUpdatePro] = useReducer(x => x + 1, 0)
-  const setLoading = useGlobal(state => state.setLoading)
+const Home = ({ forceUpdateProfile, renderProfile }) => {
   const user = useGlobal(state => state.user)
+
   const addToast = useGlobal(state => state.addToast)
-  const postLoading = useGlobal(state => state.postLoading)
-  const setPostLoading = useGlobal(state => state.setPostLoading)
+  const logout = useGlobal(state => state.logout)
+  const updateProfile = useGlobal(state => state.updateProfile)
 
-  const fetchPosts = async () => {
-    try {
-      const response = await api.get('posts/')
-      const data = response.data
-      setPosts(data)
-      setPostLoading(false)
-    } catch (err) {
-      console.log(err.message)
-      addToast(`${err.message}`, 'failure')
-    }
-  }
+  const token = JSON.parse(localStorage.getItem('tokens'))
 
-  useEffect(() => {
-    setPostLoading(true)
-    fetchPosts()
-  }, [ignored])
-
-  const [editProfile, setEditProfile] = useState(false)
   const [showFollowerModal, setshowFollowerModal] = useState(false)
   const [showFollowingModal, setshowFollowingModal] = useState(false)
+  const [posts, setPosts] = useState([])
+  const [profile, setProfile] = useState({})
+  const [profileloading, setProfileLoading] = useState(true)
+  const [postLoading, setPostLoading] = useState(true)
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+
+  const fetchPosts = async page => {
+    try {
+      const response = await api.get(`posts/?page=${page}`)
+      setPosts([...posts, ...response.data.results])
+      setHasMore(response.data.next !== null)
+    } catch (err) {
+      addToast(`${err.message}`, 'failure')
+    } finally {
+      setPostLoading(false)
+    }
+  }
+  const handleLoadMore = () => {
+    setCurrentPage(prevPage => prevPage + 1)
+  }
+
+  const fetchCurrentUserProfile = async () => {
+    try {
+      const res = await api.get(`/${user.profile.user.username}/`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.access}`
+        }
+      })
+      setProfile(res.data)
+      updateProfile(res.data)
+    } catch (err) {
+      console.log(err)
+      logout()
+    }
+  }
+  useEffect(() => {
+    setTimeout(() => {
+      fetchCurrentUserProfile().then(() => setProfileLoading(false))
+    }, 1000)
+  }, [renderProfile])
+
+  useEffect(() => {
+    setTimeout(() => {
+      fetchPosts(currentPage)
+    }, 1000)
+  }, [currentPage])
 
   return (
     <div className='home-page'>
       <div className='home-profile' id='home-profile'>
-        <Profile
-          openFollowerModal={setshowFollowerModal}
-          followerModal={showFollowerModal}
-          openFollowingModal={setshowFollowingModal}
-          followingModal={showFollowingModal}
-        />
+        {profileloading ? (
+          <ProfileSkeleton />
+        ) : (
+          <Profile
+            openFollowerModal={setshowFollowerModal}
+            followerModal={showFollowerModal}
+            openFollowingModal={setshowFollowingModal}
+            followingModal={showFollowingModal}
+            forceUpdateProfile={forceUpdateProfile}
+            renderProfile={renderProfile}
+            profile={profile}
+          />
+        )}
 
         <Follower
           closeFollowerModal={setshowFollowerModal}
           open={showFollowerModal}
-          followers={user.profile.follower}
+          followers={profile.follower}
         />
 
         <Following
           open={showFollowingModal}
           closeFollowingModal={setshowFollowingModal}
-          followings={user.profile.following}
+          followings={profile.following}
         />
 
-        <Premium />
+        <Premium premium={profile?.user?.premium} />
       </div>
       <div className='home-posts'>
         {postLoading ? (
@@ -81,17 +120,37 @@ const Home = ({ ignored }) => {
         ) : (
           <>
             {posts.map((posts, id) => (
-              <Posts post={posts} forceUpdatePro={forceUpdatePro} key={id} />
+              <Posts post={posts} key={id} />
             ))}
           </>
         )}
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 20
+          }}
+        >
+          {hasMore && (
+            <button
+              style={{
+                border: '0.5px black solid'
+              }}
+              onClick={handleLoadMore}
+            >
+              Load More
+            </button>
+          )}
+        </div>
       </div>
       <div className='home-additional' id='home-additional'>
         <div className='home-ad' id='home-ad'>
           <Ad />
         </div>
         <div className='home-suggestion' id='home-sugg'>
-          <Suggestion />
+          <Suggestion forceUpdateProfile={forceUpdateProfile} />
         </div>
       </div>
     </div>

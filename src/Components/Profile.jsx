@@ -1,65 +1,50 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaPlus, FaEdit } from 'react-icons/fa'
-import { side_bg2, side_bg } from '../assets'
-import api from '../Config/config'
-import ChangeProfilePic from './Modals/ChangeProfilePic'
-import ChangeBgPic from './Modals/ChangeBgPic'
+import { PiSealCheckLight } from 'react-icons/pi'
 import useGlobal from '../Core/global'
 const Profile = ({
   openFollowerModal,
   followerModal,
   followingModal,
   openFollowingModal,
-  forceUpdatePro
+  profile
 }) => {
-  const [changeProfilePicModal, setchangeProfilePicModal] = useState(false)
-  const [changeBgPicModal, setChangeBgPicModal] = useState(false)
-
   const user = useGlobal(state => state.user)
-
   return (
     <React.Fragment>
       <div className='profile' id='profile'>
         <div className='profile-bg-pic'>
-          <img src={user.profile.bg_pic} alt='' />
-          <div
-            className='bg-pic-edit'
-            onClick={() => setChangeBgPicModal(!changeBgPicModal)}
-          >
-            <span>
-              <FaEdit />
-            </span>
-            Edit
-          </div>
+          <img src={profile?.bg_pic} alt='' />
         </div>
         <div className='profile-pic'>
-          <img src={user.profile.profile_pic} alt='' />
-          <div
-            className='profile-image-edit-plus'
-            onClick={() => setchangeProfilePicModal(!changeProfilePicModal)}
-          >
-            <FaPlus size={15} />
-          </div>
+          <img src={profile?.profile_pic} alt='' />
         </div>
         <div className='profile-name'>
-          <Link to={`/profile/`}>{user.profile.full_name}</Link>
+          <Link
+            to={`/profile/${user.profile.user.username}/`}
+            state={{ username: user.profile.user.username, profile: profile }}
+          >
+            {profile?.full_name}
+          </Link>
+          {user.profile.user.premium && (
+            <PiSealCheckLight size={20} color='rgba(35, 11, 143, 0.658)' />
+          )}
         </div>
         <div className='profile-bio'>
-          <p>{user.profile.user.username}</p>
+          <p>{profile?.user?.username}</p>
         </div>
         <div className='profile-bio'>
-          <p>{user.profile.bio}</p>
+          <p>{profile?.bio}</p>
         </div>
         <div className='profile-bio'>
-          <p>{user.profile.personal_intrests}</p>
+          <p>{profile?.personal_intrests}</p>
         </div>
         <div className='profile-bio'>
-          <p>{user.profile.location}</p>
+          <p>{profile?.location}</p>
         </div>
-        <div className='profile-hashtags'>
+        {/* <div className='profile-hashtags'>
           <p>#ai #Linkedin #django #django-restframework #web-deveopment</p>
-        </div>
+        </div> */}
         <div className='profile-status'>
           <div className='profile-follower'>
             <Link
@@ -69,7 +54,7 @@ const Profile = ({
             >
               followers
             </Link>{' '}
-            {user.profile.follower.length}
+            {profile?.follower?.length}
           </div>
           <div className='profile-follower'>
             <Link
@@ -79,33 +64,20 @@ const Profile = ({
             >
               Following{' '}
             </Link>{' '}
-            {user.profile.following.length}
+            {profile?.following?.length}
           </div>
         </div>
         <div className='profile-activity'>
           <Link to='/activity'>Activity</Link>
         </div>
         <hr style={{ margin: '10px 0' }} />
-        <div className='profile-hashtags'>
+        {/* <div className='profile-hashtags'>
           <Link>Follow Hashtags</Link>
           <Link>
             <FaPlus />
           </Link>
-        </div>
+        </div> */}
       </div>
-      <ChangeProfilePic
-        open={changeProfilePicModal}
-        closeChnageProfilePic={setchangeProfilePicModal}
-        profile_pic={user.profile.profile_pic}
-        forceUpdatePro={forceUpdatePro}
-      />
-      {/* <ChangeBgPic
-        open={changeBgPicModal}
-        closeChangeBgPic={setChangeBgPicModal}
-        bg_pic={pro.bg_pic}
-        username={pro.user.username}
-        forceUpdatePro={forceUpdatePro}
-      /> */}
     </React.Fragment>
   )
 }

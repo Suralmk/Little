@@ -1,0 +1,103 @@
+
+.profile-skeleton {
+    padding: 10px;
+    position: relative;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.849);
+}
+
+.profile-bg-skeleton {
+    z-index: 0;
+    height: 120px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+.profile-pic-skeleton {
+    margin: 55px 0  0 5px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    animation: skeleton-loading 2s infinite linear; 
+}
+.profile-name-skeleton {
+    margin-top: 30px ;
+    height: 15px;
+    width: 150px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+.profile-username-skeleton {
+    margin: 10px 0px ;
+    height: 15px;
+    width: 150px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+.profile-bio-skeleton {
+    margin: 10px 0px ;
+    height: 15px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+.profile-location-skeleton {
+    margin: 10px 0px ;
+    height: 15px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+.profile-personal-intrests-skeleton {
+    margin: 10px 0px ;
+    height: 15px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+
+.profile-status-skeleton {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.profile-follower-skeleton {
+    margin: 10px 0px ;
+    height: 15px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+    width: 50%;
+}
+.profile-following-skeleton {
+    margin: 10px 0px ;
+    height: 15px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+    width: 50%;
+}
+.profile-hashtags-skeleton{
+    margin: 10px 0px ;
+    height: 15px;
+    border-radius: 5px;
+    animation: skeleton-loading 2s infinite linear; 
+}
+
+
+  @keyframes shimmer {
+    0% {
+      background-position: -100px 0;
+    }  
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-color: rgba(233,245,242,0.9108018207282913);
+    }
+    50% {
+      background-color: rgba(245, 245, 245, 0.418);
+    }
+    100% {
+      background-color: rgba(233,245,242,0.9108018207282913);
+    }
+  }

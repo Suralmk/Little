@@ -12,7 +12,7 @@ const Message = () => {
   const [toggleFriends, settoggleFriends] = useState(true)
   return (
     <div className='message'>
-      <div className='message__toggle-list' id='toggle-message-list-btn'>
+      {/* <div className='message__toggle-list' id='toggle-message-list-btn'>
         {toggleFriends ? (
           <FaChevronLeft
             onClick={() => {
@@ -136,7 +136,8 @@ const Message = () => {
             </button>
           </form>
         </section>
-      </section>
+      </section> */}
+      <h1>Under Development</h1>
     </div>
   )
 }

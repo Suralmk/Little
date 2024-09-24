@@ -8,7 +8,7 @@ const Layout = () => {
       <div>
         <NavBar />
       </div>
-      <div>
+      <div style={{ marginTop: 70 }}>
         <Outlet />
       </div>
     </div>
