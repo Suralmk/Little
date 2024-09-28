@@ -8,9 +8,9 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 axios.defaults.withCredentials = true
 
 export const api = axios.create({
-  baseURL: 'http://littlebackend.pythonanywhere.com/api/'
+  baseURL: 'https://littlebackend.pythonanywhere.com/api/'
 })
 
 export const googleapi = axios.create({
-  baseURL: 'http://littlebackend.pythonanywhere.com/'
+  baseURL: 'https://littlebackend.pythonanywhere.com/'
 })
