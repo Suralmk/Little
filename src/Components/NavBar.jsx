@@ -241,7 +241,10 @@ const NavBar = () => {
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />
                 </NavLink>
-                <ul className={me ? `show-me-menu me-menu` : 'me-menu'}>
+                <ul
+                  ref={meRef}
+                  className={me ? `show-me-menu me-menu` : 'me-menu'}
+                >
                   <li>
                     <Link
                       onClick={() => {
