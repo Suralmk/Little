@@ -94,6 +94,7 @@ const OthersProfile = ({ renderProfile, forceUpdateProfile }) => {
     followStatus()
   }, [renderProfile, username])
 
+  console.log(userData)
   return (
     <React.Fragment>
       <div className='others-profile-container'>
@@ -131,7 +132,7 @@ const OthersProfile = ({ renderProfile, forceUpdateProfile }) => {
               <div className='others-profile-name'>
                 <h2>
                   {userData.full_name}{' '}
-                  {userData.user.premium && (
+                  {userData.premium && (
                     <PiSealCheckLight
                       size={20}
                       color='rgba(35, 11, 143, 0.658)'
