@@ -131,7 +131,7 @@ const OthersProfile = ({ renderProfile, forceUpdateProfile }) => {
               <div className='others-profile-name'>
                 <h2>
                   {userData.full_name}{' '}
-                  {user.profile.user.premium && (
+                  {userData.user.premium && (
                     <PiSealCheckLight
                       size={20}
                       color='rgba(35, 11, 143, 0.658)'
