@@ -5,6 +5,7 @@ import useGlobal from '../Core/global'
 import { api } from '../Core/config'
 import ChangeBgPic from '../Components/Modals/ChangeBgPic'
 import ChangeProfilePic from '../Components/Modals/ChangeProfilePic'
+import { PiSealCheckLight } from 'react-icons/pi'
 
 const OthersProfile = ({ renderProfile, forceUpdateProfile }) => {
   const user = useGlobal(state => state.user)
@@ -128,7 +129,15 @@ const OthersProfile = ({ renderProfile, forceUpdateProfile }) => {
 
             <div className='others-profile-content'>
               <div className='others-profile-name'>
-                <h2>{userData.full_name}</h2>
+                <h2>
+                  {userData.full_name}{' '}
+                  {user.profile.user.premium && (
+                    <PiSealCheckLight
+                      size={20}
+                      color='rgba(35, 11, 143, 0.658)'
+                    />
+                  )}
+                </h2>
                 {username === user.profile.user.username && (
                   <Link to={`/profile/${username}/edit`}>
                     <FaEdit /> Edit Profile
