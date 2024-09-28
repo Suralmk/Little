@@ -37,27 +37,6 @@ const NavBar = () => {
     setLoading(false)
   }
 
-  const meRef = useRef()
-  const meMobRef = useRef()
-
-  useEffect(() => {
-    const handleOutsideClick = event => {
-      // Close modal if click is outside of menuRef
-      if (
-        meRef.current ||
-        (meMobRef.current && !meRef.current.contains(event.target)) ||
-        !meMobRef.current.contains(event.target)
-      ) {
-        setMe(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleOutsideClick)
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick)
-    }
-  }, [])
   return (
     <React.Fragment>
       <div className='nav ' id='nav'>
@@ -128,7 +107,7 @@ const NavBar = () => {
                 style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
             </NavLink>
-            <ul ref={meRef} className={me ? `show-me-menu me-menu` : 'me-menu'}>
+            <ul className={me ? `show-me-menu me-menu` : 'me-menu'}>
               <li style={{ width: '100%', display: 'flex' }}>
                 <Link
                   style={{ width: '100%' }}
@@ -246,10 +225,7 @@ const NavBar = () => {
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />
                 </NavLink>
-                <ul
-                  ref={meMobRef}
-                  className={me ? `show-me-menu me-menu` : 'me-menu'}
-                >
+                <ul className={me ? `show-me-menu me-menu` : 'me-menu'}>
                   <li>
                     <Link
                       onClick={() => {
