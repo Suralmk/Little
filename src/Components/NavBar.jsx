@@ -38,11 +38,16 @@ const NavBar = () => {
   }
 
   const meRef = useRef()
+  const meMobRef = useRef()
 
   useEffect(() => {
     const handleOutsideClick = event => {
       // Close modal if click is outside of menuRef
-      if (meRef.current && !meRef.current.contains(event.target)) {
+      if (
+        meRef.current ||
+        (meMobRef.current && !meRef.current.contains(event.target)) ||
+        !meMobRef.current.contains(event.target)
+      ) {
         setMe(false)
       }
     }
@@ -242,7 +247,7 @@ const NavBar = () => {
                   />
                 </NavLink>
                 <ul
-                  ref={meRef}
+                  ref={meMobRef}
                   className={me ? `show-me-menu me-menu` : 'me-menu'}
                 >
                   <li>

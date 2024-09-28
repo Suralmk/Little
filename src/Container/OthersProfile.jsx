@@ -94,7 +94,6 @@ const OthersProfile = ({ renderProfile, forceUpdateProfile }) => {
     followStatus()
   }, [renderProfile, username])
 
-  console.log(userData)
   return (
     <React.Fragment>
       <div className='others-profile-container'>
